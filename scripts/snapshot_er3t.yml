@@ -1,0 +1,43 @@
+er3t:
+  version: '1.0'
+  generated: '2026-06-25T10:16:26Z'
+  source_tif: snapshot-2026-06-24T00_00_00Z.tif
+paths:
+  libradtran: ~/libradtran/v2.0.6
+  mcarats: ~/mcarats/v0.10.4/src/mcarats
+  data: ~/er3t-data/
+  output: ./output
+scene:
+  date: '2026-06-24'
+  domain:
+    lon:
+    - 9.32292
+    - 13.14788
+    lat:
+    - 55.0445
+    - 59.0717
+  sensor:
+    satellite: Terra or Aqua
+    sensor: MODIS
+    note: inferred from ~500m res
+  source:
+    tif: snapshot-2026-06-24T00_00_00Z.tif
+    tif_res_m: 488
+    tif_size_px:
+    - 870
+    - 916
+simulation:
+  solver: mcarats
+  n_photon: 100000000.0
+  wavelengths:
+    mode: broadband
+  output:
+    radiance: true
+    irradiance: true
+    format: hdf5
+atmosphere:
+  profile: afglss
+  gas_abs: reptran
+  aerosol: false
+surface:
+  albedo: 0.06

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation — EaR³T</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="nav-brand">EaR³T</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="science.html">Science</a></li>
+      <li><a href="install.html" class="active">Installation</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="https://github.com/hong-chen/er3t" target="_blank">GitHub ↗</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <h1>Installation Guide</h1>
+    <p>Set up EaR³T and all companion solvers on your system</p>
+  </header>
+
+  <main class="page-content">
+
+    <div class="callout">
+      <strong>Before the summer school:</strong> Please work through these steps during office hours
+      with Sebastian. The installation is non-trivial the first time, but the verification script
+      at the end will confirm everything is working.
+    </div>
+
+    <h2>System Requirements</h2>
+    <ul>
+      <li>Linux or macOS (Windows via WSL2 is possible but untested)</li>
+      <li>Python 3.9+ (via conda / miniconda recommended)</li>
+      <li>Fortran compiler: <code>gfortran</code> (for MCARaTS and libRadtran)</li>
+      <li>C compiler: <code>gcc</code></li>
+      <li>~10 GB disk space for data packages</li>
+      <li>Internet access for automatic satellite data downloads</li>
+    </ul>
+
+    <h2>Step 1: Conda Environment</h2>
+
+    <p>Clone the EaR³T repository and set up the conda environment:</p>
+    <pre><code>git clone https://github.com/hong-chen/er3t.git
+cd er3t
+conda env create -f er3t-env.yml
+conda activate er3t</code></pre>
+
+    <p>The environment includes all required Python packages. Key dependencies:</p>
+    <ul>
+      <li><code>numpy</code>, <code>scipy</code>, <code>matplotlib</code></li>
+      <li><code>h5py</code>, <code>netCDF4</code>, <code>pyhdf</code></li>
+      <li><code>cartopy</code>, <code>owslib</code></li>
+      <li><code>requests</code>, <code>tqdm</code>, <code>gdown</code></li>
+    </ul>
+
+    <h2>Step 2: Install EaR³T (Python package)</h2>
+
+    <pre><code>cd er3t
+pip install -e .</code></pre>
+
+    <p>The <code>-e</code> flag installs in editable mode so you can modify the source and see changes immediately.</p>
+
+    <h2>Step 3: Install MCARaTS (3D Monte Carlo solver)</h2>
+
+    <p>MCARaTS is a Fortran-based 3D Monte Carlo radiative transfer solver by H. Iwabuchi. It is the primary 3D solver used by EaR³T.</p>
+
+    <h3>3a. Install hparx (dependency of MCARaTS)</h3>
+    <pre><code>unzip mcarats.zip -d mcarats/
+cd mcarats/hparx
+# Edit Common.mk: uncomment gfortran lines
+# FC = gfortran
+# FCFLAGS = -O -Wall
+make
+export HPARX_PATH=${PWD}</code></pre>
+
+    <h3>3b. Compile MCARaTS</h3>
+    <pre><code>cd ../v0.10.4/src
+# Edit Common.mk: uncomment gfortran lines
+# FC = gfortran
+# FCFLAGS = -O3 -Wall
+make</code></pre>
+
+    <p>The executable <code>mcarats/v0.10.4/src/mcarats</code> is the 3D solver. Add its path to your shell environment.</p>
+
+    <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
+
+    <p>libRadtran is used by EaR³T as a 1D solver for benchmarking and as a computational shortcut for
+    spectrally resolved calculations.</p>
+
+    <pre><code># Download from http://www.libradtran.org
+mkdir -p ~/libradtran/v2.0.6
+tar -xvzf libRadtran-2.0.6.tar.gz -C ~/libradtran/v2.0.6 --strip-components=1
+cd ~/libradtran/v2.0.6
+
+./configure --prefix=${PWD}
+make
+make check</code></pre>
+
+    <p>Add the data directory to your shell environment:</p>
+    <pre><code>export LIBRADTRAN_DATA_FILES="${HOME}/libradtran/v2.0.6/data/"</code></pre>
+
+    <h3>Optional data packages (recommended)</h3>
+    <ul>
+      <li><code>reptran</code> — correlated-k gas absorption (needed for spectrally resolved calculations)</li>
+      <li><code>ic_yang2013</code> — ice crystal optical properties</li>
+      <li><code>optprop</code> — additional optical property tables</li>
+    </ul>
+
+    <div class="callout">
+      ⚠️ <strong>Tip:</strong> The libRadtran <code>make check</code> step requires <code>ndiff</code>
+      and <code>gawk</code>. Install via your system package manager (<code>brew</code> on macOS,
+      <code>apt-get</code> on Ubuntu) if missing.
+    </div>
+
+    <h2>Step 5: SHDOM (optional, advanced)</h2>
+
+    <p>
+      SHDOM (Spherical Harmonic Discrete Ordinate Method, K.F. Evans) is a deterministic 3D solver
+      with polarimetric capabilities. It is used for tomographic applications. Installation instructions
+      will be added in a future update.
+    </p>
+
+    <h2>Step 6: Verify the Installation</h2>
+
+    <p>Run the verification script to confirm EaR³T, MCARaTS, and libRadtran are all working:</p>
+
+    <pre><code>cd er3t/examples
+python check_installation.py</code></pre>
+
+    <div class="callout">
+      🚧 <strong>Coming soon:</strong> The <code>check_installation.py</code> verification script
+      is currently being developed as part of this summer school. It will run a minimal end-to-end
+      test for each solver and report pass/fail with helpful error messages.
+    </div>
+
+    <p>Alternatively, run the basic example scripts directly:</p>
+    <pre><code># Test 1D libRadtran interface
+python examples/00_er3t_lrt.py
+
+# Test 3D MCARaTS interface
+python examples/00_er3t_mca.py</code></pre>
+
+    <h2>CU Research Computing (Alpine / SLURM)</h2>
+
+    <p>For students with access to CU's Alpine cluster, larger runs can be submitted via SLURM.
+    Add the following header to your example script:</p>
+
+    <pre><code>#!/bin/env python
+#SBATCH --partition=amilan
+#SBATCH --nodes=1
+#SBATCH --ntasks=12
+#SBATCH --ntasks-per-node=12
+#SBATCH --time=01:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=your.email@colorado.edu
+#SBATCH --output=sbatch-output_%x_%j.txt
+#SBATCH --job-name=my_er3t_run</code></pre>
+
+    <p>Then submit with:</p>
+    <pre><code>chmod +x my_script.py
+sbatch my_script.py</code></pre>
+
+    <h2>Troubleshooting</h2>
+
+    <p><em>This section will be populated as common issues are identified during the pre-school office hours.</em></p>
+
+    <ul>
+      <li><strong>MCARaTS compile error</strong>: Ensure <code>gfortran</code> is installed and the correct lines in <code>Common.mk</code> are uncommented.</li>
+      <li><strong>libRadtran configure fails</strong>: Check that <code>netcdf</code>, <code>hdf5</code>, and <code>gsl</code> are installed (via conda or system package manager).</li>
+      <li><strong>Import errors in Python</strong>: Make sure the <code>er3t</code> conda environment is active (<code>conda activate er3t</code>).</li>
+    </ul>
+
+    <h2>Resources</h2>
+    <ul>
+      <li><a href="https://github.com/hong-chen/er3t" target="_blank">EaR³T GitHub repository</a></li>
+      <li><a href="https://er3t.readthedocs.io" target="_blank">EaR³T documentation (readthedocs)</a></li>
+      <li><a href="http://www.libradtran.org" target="_blank">libRadtran website</a></li>
+      <li>MCARaTS: contact H. Iwabuchi (Tohoku University)</li>
+    </ul>
+
+  </main>
+
+  <footer class="footer">
+    <p>
+      EaR³T · <a href="https://github.com/hong-chen/er3t" target="_blank">GitHub</a>
+      · <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>
+      · GPL-3.0
+    </p>
+    <p class="footer-credit">Site maintained by K. Sebastian Schmidt · LASP / CU Boulder</p>
+  </footer>
+
+</body>
+</html>

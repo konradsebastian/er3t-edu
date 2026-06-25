@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EaR³T — Education and Research 3D Radiative Transfer Toolbox</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <div class="nav-brand">EaR³T</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="science.html">Science</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="https://github.com/hong-chen/er3t" target="_blank">GitHub ↗</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">Education &amp; Research</div>
+      <h1>EaR³T</h1>
+      <p class="hero-subtitle">Education and Research 3D Radiative Transfer Toolbox</p>
+      <p class="hero-desc">
+        A Python toolkit for automating 3D radiative transfer calculations with satellite data —
+        built to close the gap between the 1D approximations of classical remote sensing
+        and the 3D reality of clouds, photons, and the atmosphere.
+      </p>
+      <div class="hero-buttons">
+        <a href="install.html" class="btn btn-primary">Get Started</a>
+        <a href="science.html" class="btn btn-secondary">Why 3D?</a>
+        <a href="projects.html" class="btn btn-secondary">Student Projects</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- THREE PILLARS -->
+  <section class="pillars">
+    <div class="pillar">
+      <div class="pillar-icon">🌤</div>
+      <h2>Science</h2>
+      <p>Understand why 1D radiative transfer is not enough, what 3D effects do to cloud retrievals and irradiance estimates, and how EaR³T approaches the problem.</p>
+      <a href="science.html" class="pillar-link">Explore the science →</a>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">⚙️</div>
+      <h2>Installation</h2>
+      <p>Step-by-step instructions for setting up EaR³T and all its components — including MCARaTS, libRadtran, and the required data packages — with a verification script.</p>
+      <a href="install.html" class="pillar-link">Install EaR³T →</a>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🛰</div>
+      <h2>Projects</h2>
+      <p>Hands-on exercises for summer school and coursework: from Arctic surface irradiance prediction to radiance closure and sub-pixel cloud inhomogeneity studies.</p>
+      <a href="projects.html" class="pillar-link">See the projects →</a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <div class="about-inner">
+      <h2>About EaR³T</h2>
+      <p>
+        EaR³T (pronounced <em>/ɜːt/</em>) is a modularized Python package developed at the
+        <a href="https://lasp.colorado.edu" target="_blank">Laboratory for Atmospheric and Space Physics (LASP)</a>
+        and the Department of Atmospheric and Oceanic Sciences at the University of Colorado Boulder.
+        It has been developed over the past decade as part of graduate student education and applied to
+        a wide range of research projects.
+      </p>
+      <p>
+        EaR³T automates the complete pipeline from satellite data download to 3D radiative transfer
+        simulation. It is inspired by <a href="http://www.libradtran.org" target="_blank">libRadtran</a>
+        and builds on it — using libRadtran as a 1D benchmark solver while extending the framework to
+        3D solvers (primarily MCARaTS) and real-world satellite data inputs.
+      </p>
+      <div class="about-links">
+        <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">📄 Key publication (Chen et al. 2023)</a>
+        <a href="https://github.com/hong-chen/er3t" target="_blank">💻 GitHub repository</a>
+        <a href="https://er3t.readthedocs.io" target="_blank">📚 Documentation</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPLICATIONS -->
+  <section class="apps">
+    <div class="apps-inner">
+      <h2>Applications</h2>
+      <div class="app-grid">
+        <div class="app-card">
+          <h3>Radiance Closure</h3>
+          <p>Simulate what a satellite <em>should</em> have measured given retrieved cloud fields, then compare with actual observations. Inconsistency reveals 3D retrieval biases.</p>
+          <span class="app-tag">OCO-2 · MODIS</span>
+        </div>
+        <div class="app-card">
+          <h3>Irradiance Closure</h3>
+          <p>Drive surface and aircraft irradiance simulations with geostationary cloud products and compare against direct airborne measurements across entire field campaigns.</p>
+          <span class="app-tag">CAMP²Ex · AHI · SPN-S</span>
+        </div>
+        <div class="app-card">
+          <h3>ML Training Data</h3>
+          <p>Generate synthetic 3D-RT radiance fields from LES cloud scenes to train neural networks that learn to correct IPA bias in cloud property retrievals.</p>
+          <span class="app-tag">CNN · LES · U-Net</span>
+        </div>
+        <div class="app-card">
+          <h3>Trace Gas Correction</h3>
+          <p>Quantify and correct 3D cloud proximity effects on OCO-2/3 CO₂ retrievals — the first physics-based 3D correction for a trace-gas satellite instrument.</p>
+          <span class="app-tag">OCO-2 · XCO₂</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>
+      EaR³T is developed at <a href="https://lasp.colorado.edu" target="_blank">LASP / University of Colorado Boulder</a>
+      · <a href="https://github.com/hong-chen/er3t" target="_blank">GitHub</a>
+      · <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>
+      · GPL-3.0 License
+    </p>
+    <p class="footer-credit">Site maintained by K. Sebastian Schmidt · schmidt-lab.lasp.colorado.edu</p>
+  </footer>
+
+</body>
+</html>

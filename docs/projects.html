@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — EaR³T</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .project-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border-left: 5px solid var(--blue-light);
+      padding: 1.75rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 2px 10px rgba(13,43,69,0.06);
+    }
+    .project-card.advanced { border-left-color: var(--accent); }
+    .project-card.research  { border-left-color: #9b59b6; }
+
+    .project-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-num {
+      background: var(--blue-light);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 1rem;
+      width: 2rem; height: 2rem;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .project-card.advanced .project-num { background: var(--accent); color: var(--blue-dark); }
+    .project-card.research  .project-num { background: #9b59b6; }
+
+    .project-title { font-size: 1.1rem; font-weight: 700; color: var(--blue-dark); }
+    .project-subtitle { font-size: 0.85rem; color: var(--text-light); margin-top: 0.15rem; }
+
+    .project-tags {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.75rem 0;
+    }
+
+    .tag {
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+    .tag-data    { background: #e8f4fd; color: #1a4a6e; }
+    .tag-skill   { background: #eafaf1; color: #1a6e3d; }
+    .tag-diff    { background: #fef9e7; color: #7d6608; }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="nav-brand">EaR³T</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="science.html">Science</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="https://github.com/hong-chen/er3t" target="_blank">GitHub ↗</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <h1>Student Projects</h1>
+    <p>Hands-on exercises to take you from 1D to 3D — choose your own path or work with an assigned project</p>
+  </header>
+
+  <main class="page-content">
+
+    <div class="callout">
+      <strong>Before you start:</strong> Make sure EaR³T is installed and the verification script passes.
+      Each project has a Jupyter notebook starter — clone the course repository and open the notebook
+      in your conda environment. You should be able to complete the core tasks in 1.5 hours; the
+      "going further" sections are for those who want to dig deeper.
+    </div>
+
+    <h2>Overview</h2>
+
+    <p>
+      All projects follow the same arc: start with real satellite data, set up a 3D-RT simulation,
+      compare the simulation to an independent observation, and interpret the difference. Each project
+      targets a different aspect of 3D radiative effects — from surface irradiance prediction to
+      radiance closure to sub-pixel cloud structure.
+    </p>
+
+    <p>Prerequisites: Python (intermediate), Jupyter notebooks, basic familiarity with atmospheric science
+    and radiative transfer concepts (covered in the intro lecture). No prior experience with 3D RT needed.</p>
+
+    <!-- PROJECT A -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-num">A</div>
+        <div>
+          <div class="project-title">Arctic Surface Irradiance from Polar Satellite Data</div>
+          <div class="project-subtitle">Pituffik, NW Greenland · MODIS/VIIRS → surface insolation</div>
+        </div>
+      </div>
+
+      <div class="project-tags">
+        <span class="tag tag-data">MODIS · VIIRS</span>
+        <span class="tag tag-data">Surface radiometer</span>
+        <span class="tag tag-skill">EaR³T irradiance</span>
+        <span class="tag tag-diff">⭐⭐ Intermediate</span>
+      </div>
+
+      <p>
+        Use a polar-orbiting satellite overpass over Pituffik (Thule Air Base, NW Greenland) as the starting
+        point. EaR³T will download the MODIS or VIIRS cloud retrieval, set up 3D-RT, and simulate
+        downwelling shortwave irradiance at the surface. You then compare the prediction with actual
+        surface radiometer observations (e.g., from the ARCSIX campaign or BSRN network).
+      </p>
+
+      <p><strong>You will learn:</strong> How to drive EaR³T with polar satellite data; how cloud optical
+      thickness and cloud fraction affect surface insolation; what the difference between 1D and 3D
+      simulations looks like for Arctic cloud scenes (often extended stratiform cloud decks —
+      a relatively 1D-friendly case).</p>
+
+      <p><strong>Going further:</strong> Compare multiple overpasses with different cloud conditions.
+      Identify which scenes show the largest 1D–3D difference and explain why.</p>
+    </div>
+
+    <!-- PROJECT B -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-num">B</div>
+        <div>
+          <div class="project-title">Aircraft Irradiance Along a Flight Track</div>
+          <div class="project-subtitle">Geostationary or polar imagery → airborne SP-NS comparison</div>
+        </div>
+      </div>
+
+      <div class="project-tags">
+        <span class="tag tag-data">AHI · MODIS</span>
+        <span class="tag tag-data">Airborne SP-NS</span>
+        <span class="tag tag-skill">EaR³T flight track</span>
+        <span class="tag tag-diff">⭐⭐ Intermediate</span>
+      </div>
+
+      <p>
+        Following the approach of Chen et al. (2023, App. 3), use geostationary or polar-orbiting cloud
+        retrievals to simulate downwelling irradiance along an aircraft flight track, then compare with
+        direct airborne SP-NS measurements. The CAMP²Ex dataset (Philippines, 2019) or ARCSIX data
+        can be used as a test bed.
+      </p>
+
+      <p><strong>You will learn:</strong> How campaign-scale irradiance closure works; how the coarse
+      resolution of geostationary imagers introduces biases; the statistical distribution of 1D–3D
+      irradiance differences across different cloud regimes.</p>
+
+      <p><strong>Going further:</strong> Stratify the results by cloud fraction and optical thickness.
+      Show which flight segments have the largest biases and map them back to the satellite imagery.</p>
+    </div>
+
+    <!-- PROJECT C -->
+    <div class="project-card advanced">
+      <div class="project-header">
+        <div class="project-num">C</div>
+        <div>
+          <div class="project-title">Radiance Closure with WorldView Cloud Scenes</div>
+          <div class="project-subtitle">NASA WorldView → IPA retrieval → 3D-RT → closure + irradiance bias</div>
+        </div>
+      </div>
+
+      <div class="project-tags">
+        <span class="tag tag-data">NASA WorldView</span>
+        <span class="tag tag-data">MODIS L1B/L2</span>
+        <span class="tag tag-skill">EaR³T radiance sim</span>
+        <span class="tag tag-diff">⭐⭐⭐ Advanced</span>
+      </div>
+
+      <p>
+        This is the core concept of Chen et al. (2023). Pick an inhomogeneous cloud scene from NASA
+        WorldView (interactive imagery browser). Use EaR³T to:
+      </p>
+      <ol>
+        <li>Download the MODIS cloud retrieval (IPA-derived COT and CER fields)</li>
+        <li>Run a 3D-RT forward simulation to predict what radiance the satellite <em>should</em> have seen</li>
+        <li>Compare the simulated radiance with the actual MODIS L1B measurement — this is the closure test</li>
+        <li>Estimate the surface irradiance bias implied by the COT bias you detected</li>
+      </ol>
+
+      <p><strong>You will learn:</strong> The full radiance closure workflow; what makes a cloud scene
+      3D-RT-biased vs. IPA-consistent; how radiance bias propagates into irradiance and cloud radiative effect errors.</p>
+
+      <p><strong>Advanced variant — CNN retrieval:</strong> Apply the EaR³T-included CNN (Nataraja et al. 2022)
+      to the scene and compare its radiance closure metrics against the IPA. Does the CNN achieve better
+      self-consistency?</p>
+    </div>
+
+    <!-- PROJECT D -->
+    <div class="project-card advanced">
+      <div class="project-header">
+        <div class="project-num">D</div>
+        <div>
+          <div class="project-title">Sub-Pixel Cloud Inhomogeneity</div>
+          <div class="project-subtitle">What does the satellite retrieve when a cloud under-fills a pixel?</div>
+        </div>
+      </div>
+
+      <div class="project-tags">
+        <span class="tag tag-data">Configurable LES scenes</span>
+        <span class="tag tag-skill">EaR³T 3D sim</span>
+        <span class="tag tag-diff">⭐⭐⭐ Advanced</span>
+      </div>
+
+      <p>
+        Simulate an imager pixel that is only partially filled by cloud (a "broken" cloud field at the
+        sub-pixel scale). Use EaR³T to generate the pixel-integrated radiance, then ask: what does a
+        standard 1D retrieval return? It will find a cloud optical thickness somewhere between zero and
+        the true value — but it has no way to separately retrieve cloud fraction and optical thickness.
+      </p>
+
+      <p>
+        Then explore whether <strong>spectral information</strong> can help break this degeneracy.
+        Multi-channel reflectance from an imaging spectrometer carries a signal that, in principle,
+        allows partial separation of cloud fraction and optical thickness. Test this hypothesis using
+        EaR³T radiance simulations across a range of scene configurations.
+      </p>
+
+      <p><strong>You will learn:</strong> The sub-pixel cloud fraction problem; the limits of passive
+      imagery retrievals; spectral information content analysis.</p>
+
+      <p><strong>Scene progression:</strong> Start with a fully overcast stratus layer (1D limit),
+      then move to broken stratocumulus, then to a isolated cumulus field — and track how the retrieval
+      bias evolves.</p>
+    </div>
+
+    <!-- PROJECT E -->
+    <div class="project-card research">
+      <div class="project-header">
+        <div class="project-num">E</div>
+        <div>
+          <div class="project-title">3D Effects on Passive Cloud Vertical Structure Retrievals</div>
+          <div class="project-subtitle">Research track · spectral reflectance + LES + information content</div>
+        </div>
+      </div>
+
+      <div class="project-tags">
+        <span class="tag tag-data">LES cloud scenes</span>
+        <span class="tag tag-skill">EaR³T 1D + 3D</span>
+        <span class="tag tag-diff">🔬 Research-grade</span>
+      </div>
+
+      <p>
+        New methods (Buggee et al., CU Boulder) retrieve the vertical structure of clouds from passive
+        shortwave reflectance spectra. This project asks: does 3D radiative transfer introduce
+        sufficient spectral perturbations to reduce the information content of these retrievals?
+      </p>
+      <ol>
+        <li>Take 3D LES cloud scenes (stratus → stratocumulus → cumulus)</li>
+        <li>Use 1D-RT (libRadtran) to generate synthetic spectral reflectance as a "traditional" satellite would observe</li>
+        <li>Use 3D-RT (MCARaTS via EaR³T) to generate the true spectral radiance field</li>
+        <li>Quantify the spectral difference and assess whether it degrades the vertical structure retrieval</li>
+      </ol>
+
+      <p><strong>You will learn:</strong> Spectral information content analysis; how 3D effects perturb
+      reflectance spectra; the connection between cloud morphology and retrieval uncertainty.</p>
+
+      <div class="callout">
+        This project is also a personal research interest of Sebastian's — results may feed directly
+        into a future publication. Don't be shy about going deep.
+      </div>
+    </div>
+
+    <h2>Getting the Starter Notebooks</h2>
+
+    <div class="callout">
+      🚧 <strong>Coming soon:</strong> Starter notebooks will be linked here before the summer school.
+      For now, the EaR³T example scripts (<code>examples/</code> in the GitHub repo) are the best
+      starting point — Projects B and C map directly onto <code>03_spns_flux-sim.py</code> and
+      <code>02_modis_rad-sim.py</code> respectively.
+    </div>
+
+    <h2>Tips for the 1.5-Hour Session</h2>
+    <ul>
+      <li>Pick one project and focus on getting the core result — don't try to do everything.</li>
+      <li>If the data download is slow, use pre-cached data (will be provided).</li>
+      <li>The "going further" sections are for bonus time — they're open-ended on purpose.</li>
+      <li>Work with a partner if you like — discussion is encouraged.</li>
+      <li>Sebastian and TAs will circulate — ask questions early rather than getting stuck.</li>
+    </ul>
+
+  </main>
+
+  <footer class="footer">
+    <p>
+      EaR³T · <a href="https://github.com/hong-chen/er3t" target="_blank">GitHub</a>
+      · <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>
+      · GPL-3.0
+    </p>
+    <p class="footer-credit">Site maintained by K. Sebastian Schmidt · LASP / CU Boulder</p>
+  </footer>
+
+</body>
+</html>

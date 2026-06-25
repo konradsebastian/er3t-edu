@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science — EaR³T</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="nav-brand">EaR³T</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="science.html" class="active">Science</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="https://github.com/hong-chen/er3t" target="_blank">GitHub ↗</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <h1>Science Introduction &amp; Context</h1>
+    <p>From 1D radiative transfer to a 3D understanding of clouds, photons, and remote sensing</p>
+  </header>
+
+  <main class="page-content">
+
+    <h2>Why Does Dimensionality Matter?</h2>
+
+    <p>
+      Radiative transfer — the physics of how radiation propagates through the atmosphere — is at the
+      heart of remote sensing, climate science, and weather forecasting. Nearly every operational satellite
+      retrieval algorithm uses a <strong>one-dimensional (1D) approximation</strong>: it treats each pixel
+      as if the atmosphere above it were an infinite, horizontally uniform layer.
+    </p>
+    <p>
+      This is the <em>Independent Pixel Approximation (IPA)</em>, and it has served the community well
+      for decades. But the real atmosphere is not 1D. Clouds have edges, towers, shadows, and gaps.
+      Photons scatter sideways — out of one pixel and into another. These <strong>horizontal photon
+      transport effects</strong> create systematic biases in retrieved cloud properties and surface irradiance
+      that the 1D framework simply cannot capture.
+    </p>
+
+    <div class="callout">
+      <strong>The core problem:</strong> When we retrieve cloud optical thickness using 1D radiative
+      transfer, the algorithm finds the cloud thickness that makes a 1D model match the measured
+      radiance. But if the photons that hit the sensor came partly from neighboring pixels, the 1D
+      model will return the wrong answer — and it will do so systematically, in ways that depend on
+      cloud morphology.
+    </div>
+
+    <h2>The 1D Baseline: libRadtran</h2>
+
+    <p>
+      The most widely used 1D radiative transfer package in the atmospheric science community is
+      <a href="http://www.libradtran.org" target="_blank">libRadtran</a>. It provides a flexible,
+      user-friendly interface to a range of 1D solvers (DISORT, RODENT, TWOSTR, and others) and
+      handles atmospheric gas absorption, aerosol optical properties, surface reflectance, and more.
+    </p>
+    <p>
+      EaR³T is inspired by libRadtran and uses it as one of its solvers — specifically to achieve
+      a consistent <strong>1D benchmark</strong> against which 3D results can be compared. This
+      means the difference between a libRadtran run and an MCARaTS 3D run through EaR³T gives you
+      a clean, well-defined measure of the 3D effect.
+    </p>
+
+    <h2>Stepping Into 3D: EaR³T and MCARaTS</h2>
+
+    <p>
+      EaR³T wraps a set of 3D radiative transfer solvers, most prominently
+      <a href="https://sites.google.com/view/hironobu-iwabuchi/mcarats" target="_blank">MCARaTS</a>
+      (Monte Carlo Atmospheric Radiative Transfer Simulator by H. Iwabuchi). Monte Carlo methods
+      trace individual photon paths through a fully 3D atmospheric grid, capturing all horizontal
+      transport effects. The cost is computation time — but for modern research and education,
+      it is tractable on a laptop or a small cluster.
+    </p>
+    <p>
+      EaR³T automates the tedious parts: downloading satellite imagery, converting cloud retrievals
+      into 3D optical property grids, setting up the solver input, running it, and collecting output
+      radiances and irradiances. This lets students and researchers focus on the physics rather than
+      the plumbing.
+    </p>
+
+    <h2>The Radiance Closure Concept</h2>
+
+    <p>
+      At the core of EaR³T's scientific approach is <strong>radiance closure</strong> (or radiance
+      self-consistency). The idea is straightforward:
+    </p>
+    <ol>
+      <li>Take a satellite measurement of radiance <em>R</em><sub>obs</sub>.</li>
+      <li>Run a retrieval algorithm (using 1D-RT) to get cloud properties (optical thickness, effective radius, etc.).</li>
+      <li>Use those retrieved properties as input to a <em>3D-RT forward model</em> and simulate what radiance the satellite should have seen: <em>R</em><sub>sim,3D</sub>.</li>
+      <li>Compare <em>R</em><sub>obs</sub> and <em>R</em><sub>sim,3D</sub>. If they match, the retrieval is 3D-consistent. If not, the gap is a direct measure of the 3D-RT retrieval bias.</li>
+    </ol>
+
+    <div class="callout">
+      <strong>Key insight:</strong> Traditional retrievals guarantee consistency with 1D-RT (by construction).
+      EaR³T tests whether they are consistent with 3D-RT (i.e., with nature). Inconsistency = bias.
+    </div>
+
+    <h2>Applications</h2>
+
+    <h3>1. OCO-2 Radiance Closure</h3>
+    <p>
+      EaR³T generates synthetic radiances at OCO-2 wavelengths from MODIS cloud retrievals and compares
+      them to actual OCO-2 measurements. Over inhomogeneous cloud scenes (e.g., SW Colorado), significant
+      inconsistency reveals 3D-RT biases in the input cloud products.
+      (<a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>)
+    </p>
+
+    <h3>2. MODIS Radiance Self-Consistency</h3>
+    <p>
+      MODIS L2 cloud products are used as input to 3D-RT to simulate MODIS L1B radiances.
+      IPA cloud optical thickness retrievals are found to be biased low due to horizontal photon
+      transport — a bias that comes to light only when 3D-RT is used for the forward simulation.
+      (<a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>)
+    </p>
+
+    <h3>3. Campaign-Scale Irradiance Closure</h3>
+    <p>
+      EaR³T processes geostationary (AHI) cloud retrievals for the full CAMP²Ex aircraft campaign
+      (NASA 2019, Philippines) and simulates irradiance along every flight leg. Comparison with
+      SP-NS airborne measurements reveals a systematic 10% low bias in satellite cloud transmittance,
+      attributable to a combination of coarse GEO resolution and 3D-RT effects.
+      (<a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>)
+    </p>
+
+    <h3>4. CNN Cloud Retrievals</h3>
+    <p>
+      EaR³T generates large synthetic datasets (LES cloud fields → 3D-RT radiances) to train a
+      U-Net convolutional neural network that retrieves cloud optical thickness while accounting for
+      spatial context. The CNN substantially reduces IPA bias across all cloud morphologies.
+      (<a href="https://doi.org/10.5194/amt-15-5181-2022" target="_blank">Nataraja et al. 2022</a>)
+    </p>
+
+    <h3>5. OCO-2 CO₂ Bias Correction</h3>
+    <p>
+      Nearby clouds contaminate OCO-2 XCO₂ retrievals via 3D scattering into cloud-free footprints.
+      EaR³T-OCO computes 3D-RT spectral perturbations and applies them as a pre-correction to OCO-2
+      spectra before retrieval — the first physics-based 3D correction for a trace-gas satellite.
+      Residual biases are reduced from &gt;2 ppm to &lt;0.7 ppm (regional average).
+      (<a href="https://egusphere.copernicus.org/preprints/2024/egusphere-2024-1936/" target="_blank">Yu-Wen Chen et al. 2024</a>)
+    </p>
+
+    <h2>The Big Picture</h2>
+
+    <p>
+      The overarching theme of EaR³T research is the transition from an oversimplified 1D view of
+      the world to a fully 3D-aware one. The drivers are:
+    </p>
+    <ul>
+      <li><strong>New, fast 3D solvers</strong> (MCARaTS, SHDOM) that make 3D-RT computationally feasible for real scenes</li>
+      <li><strong>High-resolution satellite imagery</strong> (MODIS, VIIRS, AHI, OCO-2) providing the 3D cloud input fields</li>
+      <li><strong>Machine learning</strong> as a way to encode 3D-RT knowledge without running full simulations in real time</li>
+      <li><strong>New multi-sensor mission architectures</strong> (EarthCARE, AOS) that are specifically designed for 3D radiance closure</li>
+    </ul>
+
+    <h2>Slides</h2>
+    <div class="callout">
+      📊 <strong>Summer school slides</strong> (1.5-hour lecture) — <em>coming soon</em>
+    </div>
+
+    <h2>Key References</h2>
+    <ul>
+      <li>
+        Chen et al. (2023): The Education and Research 3D Radiative Transfer Toolbox (EaR³T).
+        <em>Atmos. Meas. Tech.</em>, 16, 1971–2000.
+        <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">doi:10.5194/amt-16-1971-2023</a>
+      </li>
+      <li>
+        Nataraja et al. (2022): Segmentation-based multi-pixel cloud optical thickness retrieval using a CNN.
+        <em>Atmos. Meas. Tech.</em>, 15, 5181.
+        <a href="https://doi.org/10.5194/amt-15-5181-2022" target="_blank">doi:10.5194/amt-15-5181-2022</a>
+      </li>
+      <li>
+        Yu-Wen Chen et al. (2024): Mitigation of OCO-2 CO₂ biases in the vicinity of clouds with 3D calculations using EaR³T.
+        <em>EGUsphere</em> [preprint].
+        <a href="https://egusphere.copernicus.org/preprints/2024/egusphere-2024-1936/" target="_blank">egusphere-2024-1936</a>
+      </li>
+      <li>
+        Mayer &amp; Kylling (2005): Technical note: the libRadtran software package for RT calculations.
+        <em>Atmos. Chem. Phys.</em>, 5, 1855–1877.
+      </li>
+      <li>
+        Iwabuchi (2006): Efficient Monte Carlo methods for RT in cloudy atmospheres.
+        <em>J. Atmos. Sci.</em>, 63, 2324–2339. (MCARaTS)
+      </li>
+    </ul>
+
+  </main>
+
+  <footer class="footer">
+    <p>
+      EaR³T · <a href="https://github.com/hong-chen/er3t" target="_blank">GitHub</a>
+      · <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>
+      · GPL-3.0
+    </p>
+    <p class="footer-credit">Site maintained by K. Sebastian Schmidt · LASP / CU Boulder</p>
+  </footer>
+
+</body>
+</html>
