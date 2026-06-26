@@ -117,9 +117,25 @@ sudo apt-get install git gfortran gcc build-essential</code></pre>
 
     <p>Create the directory, define it as a shell variable, and move into it before starting.
     The <code>$ERTDIR</code> variable is used in all subsequent steps so you don't have to
-    type the full path repeatedly — add it to your <code>~/.bashrc</code> or <code>~/.zshrc</code>
-    to make it permanent.</p>
-    <pre><code>export ERTDIR=~/ert3d        # choose your preferred location
+    type the full path repeatedly — add it to your shell startup file to make it permanent.</p>
+
+    <div class="callout"><strong>Shell syntax note.</strong> Not sure which shell you have?
+    Run <code>echo $SHELL</code>. If it prints <code>/bin/bash</code> or <code>/bin/zsh</code>
+    (most Linux and modern macOS), use <code>export VAR=value</code> and edit
+    <code>~/.bashrc</code> or <code>~/.zshrc</code>. If it prints <code>/bin/tcsh</code> or
+    <code>/bin/csh</code>, use <code>setenv VAR value</code> (no equals sign, no quotes needed
+    for simple paths) and edit <code>~/.cshrc</code> or <code>~/.tcshrc</code>.
+    After editing your rc file, apply changes to the current session with
+    <code>source ~/.bashrc</code> (or <code>source ~/.cshrc</code> etc.) — otherwise the
+    new variables won't be available until you open a new terminal.</div>
+
+    <pre><code># bash / zsh:
+export ERTDIR=~/ert3d        # choose your preferred location
+mkdir -p $ERTDIR
+cd $ERTDIR
+
+# tcsh / csh — same effect, different syntax:
+setenv ERTDIR ~/ert3d
 mkdir -p $ERTDIR
 cd $ERTDIR</code></pre>
 
@@ -195,7 +211,14 @@ FCFLAGS = -O3 -Wall</code></pre>
 
     <p>Build and record the path:</p>
     <pre><code>make
-export HPARX_PATH=$ERTDIR/hparx   # add this line to your ~/.bashrc or ~/.zshrc</code></pre>
+
+# bash / zsh — add to ~/.bashrc or ~/.zshrc, then source it:
+export HPARX_PATH=$ERTDIR/hparx
+source ~/.bashrc    # (or source ~/.zshrc)
+
+# tcsh / csh — add to ~/.cshrc or ~/.tcshrc, then source it:
+setenv HPARX_PATH $ERTDIR/hparx
+source ~/.cshrc</code></pre>
 
     <p>A successful build ends with <code>Archiving... libhparx.a</code> and <code>Done.</code>
     A few gfortran warnings about character truncation, integer division, and uninitialized
@@ -223,7 +246,13 @@ HPARX = /your/ERTDIR/hparx   # paste your actual $HPARX_PATH from step 3a here</
 
     <p>This produces the <code>mcarats</code> executable in <code>ERTDIR/mcarats-0.10.3/src/</code>.
     Add it to your PATH:</p>
-    <pre><code>export PATH="${PATH}:$ERTDIR/mcarats-0.10.3/src"  # add to ~/.bashrc or ~/.zshrc</code></pre>
+    <pre><code># bash / zsh — add to ~/.bashrc or ~/.zshrc, then source it:
+export PATH="${PATH}:$ERTDIR/mcarats-0.10.3/src"
+source ~/.bashrc    # (or source ~/.zshrc)
+
+# tcsh / csh — add to ~/.cshrc or ~/.tcshrc, then source it:
+setenv PATH "${PATH}:$ERTDIR/mcarats-0.10.3/src"
+source ~/.cshrc</code></pre>
 
     <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
 
