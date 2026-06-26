@@ -67,25 +67,48 @@ pip install -e .</code></pre>
 
     <h2>Step 3: Install MCARaTS (3D Monte Carlo solver)</h2>
 
-    <p>MCARaTS is a Fortran-based 3D Monte Carlo radiative transfer solver by H. Iwabuchi. It is the primary 3D solver used by EaR³T.</p>
+    <p>MCARaTS is a Fortran-based 3D Monte Carlo radiative transfer solver developed by H. Iwabuchi
+    (Tohoku University). It is the primary 3D solver used by EaR³T. Version 0.10.3 is used here.</p>
 
-    <h3>3a. Install hparx (dependency of MCARaTS)</h3>
-    <pre><code>unzip mcarats.zip -d mcarats/
-cd mcarats/hparx
-# Edit Common.mk: uncomment gfortran lines
-# FC = gfortran
-# FCFLAGS = -O -Wall
-make
-export HPARX_PATH=${PWD}</code></pre>
+    <div class="callout">
+      <strong>Download source files</strong> — we host copies here for reliability. The original
+      upstream source is Iwabuchi's
+      <a href="https://sites.google.com/site/mcarats/download" target="_blank">MCARaTS Google site (v0.10.3)</a>.
+      <ul style="margin-top:0.5em; margin-bottom:0;">
+        <li><a href="https://github.com/konradsebastian/er3t-edu/raw/main/source/hparx-pub-20160906_1749.tar.gz">hparx-pub-20160906_1749.tar.gz</a> — hparx library (MCARaTS dependency)</li>
+        <li><a href="https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-0.10.3.tar.gz">mcarats-0.10.3.tar.gz</a> — MCARaTS source code</li>
+        <li><a href="https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-examples-0.10.3.tar.gz">mcarats-examples-0.10.3.tar.gz</a> — MCARaTS example inputs (optional but recommended)</li>
+      </ul>
+    </div>
+
+    <h3>3a. Build hparx (required dependency)</h3>
+    <pre><code>tar -xzf hparx-pub-20160906_1749.tar.gz
+cd hparx</code></pre>
+
+    <p>Open <code>Common.mk</code> in a text editor and uncomment the gfortran lines:</p>
+    <pre><code>FC = gfortran
+FCFLAGS = -O -Wall</code></pre>
+
+    <p>Build and record the path:</p>
+    <pre><code>make
+export HPARX_PATH=${PWD}   # add this line to your ~/.bashrc or ~/.zshrc</code></pre>
 
     <h3>3b. Compile MCARaTS</h3>
-    <pre><code>cd ../v0.10.4/src
-# Edit Common.mk: uncomment gfortran lines
-# FC = gfortran
-# FCFLAGS = -O3 -Wall
-make</code></pre>
+    <pre><code>cd ..
+tar -xzf mcarats-0.10.3.tar.gz
+cd mcarats-0.10.3/src</code></pre>
 
-    <p>The executable <code>mcarats/v0.10.4/src/mcarats</code> is the 3D solver. Add its path to your shell environment.</p>
+    <p>Open <code>Common.mk</code>, uncomment the gfortran lines, and set the hparx path:</p>
+    <pre><code>FC = gfortran
+FCFLAGS = -O3 -Wall
+HPARX = /path/to/hparx   # replace with your actual HPARX_PATH from step 3a</code></pre>
+
+    <p>Build:</p>
+    <pre><code>make</code></pre>
+
+    <p>This produces the <code>mcarats</code> executable in <code>mcarats-0.10.3/src/</code>.
+    Add it to your PATH (and persist in your shell config):</p>
+    <pre><code>export PATH="${PATH}:/path/to/mcarats-0.10.3/src"</code></pre>
 
     <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
 
@@ -180,7 +203,7 @@ sbatch my_script.py</code></pre>
       <li><a href="https://github.com/hong-chen/er3t" target="_blank">EaR³T GitHub repository</a></li>
       <li><a href="https://er3t.readthedocs.io" target="_blank">EaR³T documentation (readthedocs)</a></li>
       <li><a href="http://www.libradtran.org" target="_blank">libRadtran website</a></li>
-      <li>MCARaTS: contact H. Iwabuchi (Tohoku University)</li>
+      <li><a href="https://sites.google.com/site/mcarats/download" target="_blank">MCARaTS v0.10.3 (Iwabuchi, Tohoku University)</a> — also mirrored in <a href="https://github.com/konradsebastian/er3t-edu/tree/main/source" target="_blank">this repo's source/ folder</a></li>
     </ul>
 
   </main>
