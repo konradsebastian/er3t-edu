@@ -197,6 +197,11 @@ FCFLAGS = -O3 -Wall</code></pre>
     <pre><code>make
 export HPARX_PATH=$ERTDIR/hparx   # add this line to your ~/.bashrc or ~/.zshrc</code></pre>
 
+    <p>A successful build ends with <code>Archiving... libhparx.a</code> and <code>Done.</code>
+    A few gfortran warnings about character truncation, integer division, and uninitialized
+    variables are expected and harmless — they reflect the original ifort-targeted source code
+    and do not affect correctness.</p>
+
     <h3>3b. Compile MCARaTS</h3>
     <p>Extract MCARaTS back into <code>ERTDIR</code> — it sits alongside <code>er3t/</code> and <code>hparx/</code>:</p>
     <pre><code>cd $ERTDIR
