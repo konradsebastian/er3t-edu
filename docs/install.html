@@ -9,7 +9,7 @@
 <body>
 
   <nav class="topnav">
-    <div class="nav-brand">EaR³T</div>
+    <div class="nav-brand"><img src="er3t-logo.png" alt="EaR³T" class="nav-logo"></div>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="science.html">Science</a></li>
@@ -32,14 +32,75 @@
       at the end will confirm everything is working.
     </div>
 
-    <h2>System Requirements</h2>
+    <h2>Step 0: Prerequisites</h2>
+
+    <p>Before installing EaR³T you need a working terminal, <code>git</code>, <code>conda</code>,
+    and a Fortran compiler. Run the check script below — if anything is missing, follow the
+    platform instructions underneath.</p>
+
+    <h3>0a. Quick check</h3>
+    <p>Open a terminal and run:</p>
+    <pre><code>for cmd in git conda gfortran gcc; do
+  if command -v $cmd &>/dev/null; then
+    echo "✓  $cmd: $(${cmd} --version 2>&1 | head -1)"
+  else
+    echo "✗  $cmd: NOT FOUND — see install instructions below"
+  fi
+done</code></pre>
+
+    <p>All four should show ✓ before you continue. If not, use the platform-specific instructions below.</p>
+
+    <h3>0b. Windows: set up WSL2 first</h3>
+    <div class="callout">
+      <strong>Windows users only.</strong>
+      EaR³T requires a Unix-like environment. The recommended approach is
+      <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank">WSL2 (Windows Subsystem for Linux 2)</a>
+      — Microsoft's built-in full Linux kernel for Windows 10/11. It gives you a real Ubuntu
+      terminal inside Windows without dual-booting or a virtual machine.
+      <ol style="margin-top:0.5em; margin-bottom:0.3em;">
+        <li>Open <strong>PowerShell as Administrator</strong> and run: <code>wsl --install</code></li>
+        <li>Reboot when prompted.</li>
+        <li>Launch <strong>Ubuntu</strong> from the Start menu — this opens your Linux terminal.</li>
+        <li>Continue with the Ubuntu instructions below.</li>
+      </ol>
+      MCARaTS compilation under WSL2 is untested. If you hit issues, report them to Sebastian.
+    </div>
+
+    <h3>0c. Install missing tools</h3>
+
+    <p><strong>macOS:</strong></p>
+    <pre><code># git + Xcode Command Line Tools (includes Apple clang):
+xcode-select --install
+
+# gfortran + GNU gcc via Homebrew (recommended):
+brew install gcc
+# This installs gfortran as "gfortran-14" (or similar version number).
+# Create an unversioned alias so build systems find it:
+ln -sf $(brew --prefix gcc)/bin/gfortran-* /usr/local/bin/gfortran
+
+# Alternatively, get gfortran through conda (works inside the er3t environment):
+conda install -c conda-forge gfortran</code></pre>
+
+    <p><strong>Ubuntu / Debian / WSL2:</strong></p>
+    <pre><code>sudo apt-get update
+sudo apt-get install git gfortran gcc build-essential</code></pre>
+
+    <p><strong>conda / Miniconda (if not installed):</strong>
+    Download from <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda</a>
+    and follow the installer. Restart your terminal after installation, then verify with
+    <code>conda --version</code>.</p>
+
+    <div class="callout">
+      ⚠️ <strong>macOS gfortran note:</strong> Homebrew installs gfortran with a version suffix
+      (e.g. <code>gfortran-14</code>). If MCARaTS or libRadtran <code>make</code> fails with
+      "gfortran: command not found", either create the alias above or set <code>FC=gfortran-14</code>
+      (matching your installed version) in the relevant <code>Common.mk</code> file.
+    </div>
+
+    <h3>0d. Disk space and connectivity</h3>
     <ul>
-      <li>Linux or macOS (Windows via WSL2 is possible but untested)</li>
-      <li>Python 3.9+ (via conda / miniconda recommended)</li>
-      <li>Fortran compiler: <code>gfortran</code> (for MCARaTS and libRadtran)</li>
-      <li>C compiler: <code>gcc</code></li>
-      <li>~10 GB disk space for data packages</li>
-      <li>Internet access for automatic satellite data downloads</li>
+      <li>~10 GB free disk space (data packages for libRadtran and satellite inputs)</li>
+      <li>Internet access — EaR³T downloads satellite data automatically at runtime</li>
     </ul>
 
     <h2>Step 1: Conda Environment</h2>
@@ -63,7 +124,16 @@ conda activate er3t</code></pre>
     <pre><code>cd er3t
 pip install -e .</code></pre>
 
-    <p>The <code>-e</code> flag installs in editable mode so you can modify the source and see changes immediately.</p>
+    <p>The conda environment from Step 1 installed all of EaR³T's <em>dependencies</em> (numpy,
+    h5py, cartopy, etc.) but not EaR³T itself — conda only knows about packages in its
+    repositories, and EaR³T is distributed via GitHub. This <code>pip install</code> step
+    registers the cloned source tree as a Python package so that <code>import er3t</code> works
+    from anywhere on your system.</p>
+
+    <p>The <code>-e</code> (editable) flag means the installation points directly at the source
+    files rather than copying them. Any changes you make to the EaR³T code take effect immediately,
+    without reinstalling — which is useful if you want to experiment with or extend the toolbox
+    during the summer school.</p>
 
     <h2>Step 3: Install MCARaTS (3D Monte Carlo solver)</h2>
 
