@@ -103,10 +103,34 @@ sudo apt-get install git gfortran gcc build-essential</code></pre>
       <li>Internet access — EaR³T downloads satellite data automatically at runtime</li>
     </ul>
 
+    <h2>Directory structure</h2>
+
+    <p>All components live as siblings under a single install directory. We call it
+    <code>ERTDIR</code> throughout this guide — choose any location you like, for example
+    <code>~/ert3d</code> or <code>~/projects/er3t-install</code>.</p>
+
+    <pre><code>ERTDIR/
+  er3t/                     ← EaR³T Python package  (Step 1)
+  hparx/                    ← hparx Fortran library  (Step 3a)
+  mcarats-0.10.3/           ← MCARaTS solver         (Step 3b)
+  mcarats-examples-0.10.3/  ← MCARaTS example inputs (optional)</code></pre>
+
+    <p>Create the directory, define it as a shell variable, and move into it before starting.
+    The <code>$ERTDIR</code> variable is used in all subsequent steps so you don't have to
+    type the full path repeatedly — add it to your <code>~/.bashrc</code> or <code>~/.zshrc</code>
+    to make it permanent.</p>
+    <pre><code>export ERTDIR=~/ert3d        # choose your preferred location
+mkdir -p $ERTDIR
+cd $ERTDIR</code></pre>
+
+    <p>All subsequent steps assume <code>$ERTDIR</code> is defined and you are running
+    commands from inside it unless noted otherwise.</p>
+
     <h2>Step 1: Conda Environment</h2>
 
-    <p>Clone the EaR³T repository and set up the conda environment:</p>
-    <pre><code>git clone https://github.com/hong-chen/er3t.git
+    <p>Clone the EaR³T repository into <code>$ERTDIR/er3t/</code> and set up the conda environment:</p>
+    <pre><code>cd $ERTDIR
+git clone https://github.com/hong-chen/er3t.git
 cd er3t
 conda env create -f er3t-env.yml
 conda activate er3t</code></pre>
@@ -152,33 +176,49 @@ pip install -e .</code></pre>
     </div>
 
     <h3>3a. Build hparx (required dependency)</h3>
-    <pre><code>tar -xzf hparx-pub-20160906_1749.tar.gz
+    <p>Extract and build from inside <code>$ERTDIR</code> — hparx will sit alongside <code>er3t/</code>:</p>
+    <pre><code>cd $ERTDIR
+tar -xzf hparx-pub-20160906_1749.tar.gz   # creates $ERTDIR/hparx/
 cd hparx</code></pre>
 
-    <p>Open <code>Common.mk</code> in a text editor and uncomment the gfortran lines:</p>
-    <pre><code>FC = gfortran
-FCFLAGS = -O -Wall</code></pre>
+    <p>Open <code>Common.mk</code> (e.g. <code>vim Common.mk</code> or <code>nano Common.mk</code>).
+    The file has two compiler blocks — one for Intel Fortran (<code>ifort</code>) and one for
+    GNU Fortran (<code>gfortran</code>). You must <strong>comment out the entire ifort block</strong>
+    and <strong>uncomment the gfortran block</strong>. The flags <code>-fast</code>,
+    <code>-no-ipo</code>, and <code>-warn</code> are Intel-specific and will cause errors with
+    gfortran if left active. The result should look like this:</p>
+    <pre><code>#FC = ifort
+#FCFLAGS = -fast -no-ipo -warn all
+
+FC = gfortran
+FCFLAGS = -O3 -Wall</code></pre>
 
     <p>Build and record the path:</p>
     <pre><code>make
-export HPARX_PATH=${PWD}   # add this line to your ~/.bashrc or ~/.zshrc</code></pre>
+export HPARX_PATH=$ERTDIR/hparx   # add this line to your ~/.bashrc or ~/.zshrc</code></pre>
 
     <h3>3b. Compile MCARaTS</h3>
-    <pre><code>cd ..
-tar -xzf mcarats-0.10.3.tar.gz
+    <p>Extract MCARaTS back into <code>ERTDIR</code> — it sits alongside <code>er3t/</code> and <code>hparx/</code>:</p>
+    <pre><code>cd $ERTDIR
+tar -xzf mcarats-0.10.3.tar.gz   # creates ERTDIR/mcarats-0.10.3/
 cd mcarats-0.10.3/src</code></pre>
 
-    <p>Open <code>Common.mk</code>, uncomment the gfortran lines, and set the hparx path:</p>
-    <pre><code>FC = gfortran
+    <p>Open <code>Common.mk</code> (e.g. <code>vim Common.mk</code>). As with hparx, comment out
+    the entire ifort block and uncomment the gfortran block. Also set the <code>HPARX</code>
+    path:</p>
+    <pre><code>#FC = ifort
+#FCFLAGS = -fast -no-ipo -warn all
+
+FC = gfortran
 FCFLAGS = -O3 -Wall
-HPARX = /path/to/hparx   # replace with your actual HPARX_PATH from step 3a</code></pre>
+HPARX = /your/ERTDIR/hparx   # paste your actual $HPARX_PATH from step 3a here</code></pre>
 
     <p>Build:</p>
     <pre><code>make</code></pre>
 
-    <p>This produces the <code>mcarats</code> executable in <code>mcarats-0.10.3/src/</code>.
-    Add it to your PATH (and persist in your shell config):</p>
-    <pre><code>export PATH="${PATH}:/path/to/mcarats-0.10.3/src"</code></pre>
+    <p>This produces the <code>mcarats</code> executable in <code>ERTDIR/mcarats-0.10.3/src/</code>.
+    Add it to your PATH:</p>
+    <pre><code>export PATH="${PATH}:$ERTDIR/mcarats-0.10.3/src"  # add to ~/.bashrc or ~/.zshrc</code></pre>
 
     <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
 
