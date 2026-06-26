@@ -207,7 +207,7 @@ cd hparx</code></pre>
 #FCFLAGS = -fast -no-ipo -warn all
 
 FC = gfortran
-FCFLAGS = -O3 -Wall</code></pre>
+FCFLAGS = -O -Wall</code></pre>
 
     <p>Build and record the path:</p>
     <pre><code>make
@@ -231,15 +231,22 @@ source ~/.cshrc</code></pre>
 tar -xzf mcarats-0.10.3.tar.gz   # creates ERTDIR/mcarats-0.10.3/
 cd mcarats-0.10.3/src</code></pre>
 
-    <p>Open <code>Common.mk</code> (e.g. <code>vim Common.mk</code>). As with hparx, comment out
-    the entire ifort block and uncomment the gfortran block. Also set the <code>HPARX</code>
-    path:</p>
+    <p>Open <code>Common.mk</code> (e.g. <code>vim Common.mk</code>). Make two edits:</p>
+    <ol>
+      <li>As with hparx, <strong>comment out the entire ifort block</strong> and uncomment the gfortran block.</li>
+      <li>Find the <code>LIB_DIR</code> line — it defaults to <code>${HOME}/local/hparx</code> —
+      and replace it with the <strong>absolute path</strong> to your compiled hparx directory.
+      Shell variables like <code>$ERTDIR</code> are <em>not</em> expanded by <code>make</code>,
+      so you must paste in the literal path. Run <code>echo $HPARX_PATH</code> in your terminal
+      to get the value to paste.</li>
+    </ol>
+    <p>The relevant section of <code>Common.mk</code> should end up looking like this:</p>
     <pre><code>#FC = ifort
 #FCFLAGS = -fast -no-ipo -warn all
 
 FC = gfortran
 FCFLAGS = -O3 -Wall
-HPARX = /your/ERTDIR/hparx   # paste your actual $HPARX_PATH from step 3a here</code></pre>
+LIB_DIR = /absolute/path/to/your/hparx   # e.g. /Users/yourname/ert3d/hparx</code></pre>
 
     <p>Build:</p>
     <pre><code>make</code></pre>
