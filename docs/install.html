@@ -261,7 +261,12 @@ source ~/.bashrc    # (or source ~/.zshrc)
 setenv PATH "${PATH}:$ERTDIR/mcarats-0.10.3/src"
 source ~/.cshrc</code></pre>
 
-    <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
+    <h2>Step 4: Install libRadtran (1D benchmark solver — optional)</h2>
+
+    <div class="callout"><strong>Skip this step for now if you're in a hurry.</strong>
+    libRadtran is only required to run the 1D benchmark examples (<code>00_er3t_lrt.py</code>).
+    The 3D MCARaTS workflow works without it. libRadtran is also a powerful standalone radiative
+    transfer tool worth having — come back to this step when time allows.</div>
 
     <p>libRadtran is used by EaR³T as a 1D solver for benchmarking and as a computational shortcut for
     spectrally resolved calculations.</p>
@@ -291,17 +296,9 @@ make check</code></pre>
       <code>apt-get</code> on Ubuntu) if missing.
     </div>
 
-    <h2>Step 5: SHDOM (optional, advanced)</h2>
-
-    <p>
-      SHDOM (Spherical Harmonic Discrete Ordinate Method, K.F. Evans) is a deterministic 3D solver
-      with polarimetric capabilities. It is used for tomographic applications. Installation instructions
-      will be added in a future update.
-    </p>
-
     <h2>Step 6: Verify the Installation</h2>
 
-    <p>Run the verification script to confirm EaR³T, MCARaTS, and libRadtran are all working:</p>
+    <p>Run the verification script to confirm EaR³T and MCARaTS are working:</p>
 
     <pre><code>cd er3t/examples
 python check_installation.py</code></pre>
