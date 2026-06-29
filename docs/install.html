@@ -156,7 +156,7 @@ conda activate er3t</code></pre>
       <li><code>numpy</code>, <code>scipy</code>, <code>matplotlib</code></li>
       <li><code>h5py</code>, <code>netCDF4</code>, <code>pyhdf</code></li>
       <li><code>cartopy</code>, <code>owslib</code></li>
-      <li><code>requests</code>, <code>tqdm</code>, <code>gdown</code></li>
+      <li><code>requests</code>, <code>tqdm</code></li>
     </ul>
 
     <h2>Step 2: Install EaR³T (Python package)</h2>
@@ -174,6 +174,36 @@ pip install -e .</code></pre>
     files rather than copying them. Any changes you make to the EaR³T code take effect immediately,
     without reinstalling — which is useful if you want to experiment with or extend the toolbox
     during the summer school.</p>
+
+    <h2>Step 2a: Download er3t data package</h2>
+
+    <p>EaR³T ships its own data directory — atmosphere profiles, solar flux tables, absorption
+    cross-sections, phase functions, and slit functions. This directory is not included in the
+    git repository (it's too large) and must be downloaded separately using the provided
+    install script, which uses <code>gdown</code> (already in your conda environment).</p>
+
+    <p>Run from inside <code>$ERTDIR/er3t/</code>:</p>
+    <pre><code>cd $ERTDIR/er3t
+bash install.sh</code></pre>
+
+    <p>This also downloads the REPTRAN gas absorption database directly from the
+    <a href="http://www.libradtran.org" target="_blank">libRadtran project</a>
+    (Gasteiger et al. 2014). Total download is approximately 180 MB;
+    allow a few minutes on a fast connection.</p>
+
+    <div class="callout">
+      ⚠️ <strong>This step is required even for the MCARaTS-only workflow.</strong>
+      Atmosphere profiles, absorption tables, and phase functions all come from this data package.
+      Without it, all example scripts fail immediately at startup.
+    </div>
+
+    <h2>Step 2b: Download example auxiliary data</h2>
+
+    <p>The example scripts need auxiliary input files (LES cloud fields etc.)
+    that are too large for git. Download them with:</p>
+
+    <pre><code>cd $ERTDIR/er3t/examples
+bash install-examples.sh</code></pre>
 
     <h2>Step 3: Install MCARaTS (3D Monte Carlo solver)</h2>
 
@@ -252,21 +282,28 @@ LIB_DIR = /absolute/path/to/your/hparx   # e.g. /Users/yourname/ert3d/hparx</cod
     <pre><code>make</code></pre>
 
     <p>This produces the <code>mcarats</code> executable in <code>ERTDIR/mcarats-0.10.3/src/</code>.
-    Add it to your PATH:</p>
+    EaR³T locates it via the environment variable <code>MCARATS_V010_EXE</code>, which must point
+    to the <em>full path of the binary</em> — not just the directory. Add this to your shell
+    startup file and reload it:</p>
     <pre><code># bash / zsh — add to ~/.bashrc or ~/.zshrc, then source it:
-export PATH="${PATH}:$ERTDIR/mcarats-0.10.3/src"
+export MCARATS_V010_EXE="$ERTDIR/mcarats-0.10.3/src/mcarats"
 source ~/.bashrc    # (or source ~/.zshrc)
 
 # tcsh / csh — add to ~/.cshrc or ~/.tcshrc, then source it:
-setenv PATH "${PATH}:$ERTDIR/mcarats-0.10.3/src"
+setenv MCARATS_V010_EXE "$ERTDIR/mcarats-0.10.3/src/mcarats"
 source ~/.cshrc</code></pre>
 
-    <h2>Step 4: Install libRadtran (1D benchmark solver — optional)</h2>
+    <p>Verify it is set correctly:</p>
+    <pre><code>echo $MCARATS_V010_EXE   # should print the full path to the mcarats binary
+$MCARATS_V010_EXE        # should print MCARaTS usage/version info, not "command not found"</code></pre>
 
-    <div class="callout"><strong>Skip this step for now if you're in a hurry.</strong>
-    libRadtran is only required to run the 1D benchmark examples (<code>00_er3t_lrt.py</code>).
-    The 3D MCARaTS workflow works without it. libRadtran is also a powerful standalone radiative
-    transfer tool worth having — come back to this step when time allows.</div>
+    <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
+
+    <div class="callout"><strong>libRadtran is needed for the full workflow.</strong>
+    Two of the three introductory examples require it — including <code>00_er3t_bmk.py</code>,
+    the benchmark that directly compares the 1D and 3D solvers and is the pedagogical centrepiece
+    of the summer school. You can skip this step if you only want to confirm that MCARaTS compiled
+    correctly, but come back to it before running any projects.</div>
 
     <p>libRadtran is used by EaR³T as a 1D solver for benchmarking and as a computational shortcut for
     spectrally resolved calculations.</p>
@@ -280,8 +317,16 @@ cd ~/libradtran/v2.0.6
 make
 make check</code></pre>
 
-    <p>Add the data directory to your shell environment:</p>
-    <pre><code>export LIBRADTRAN_DATA_FILES="${HOME}/libradtran/v2.0.6/data/"</code></pre>
+    <p>Add the libRadtran root directory to your shell environment. EaR³T uses the variable
+    <code>LIBRADTRAN_V2_DIR</code> and constructs paths like <code>$LIBRADTRAN_V2_DIR/bin/uvspec</code>
+    and <code>$LIBRADTRAN_V2_DIR/data/</code> automatically — so point it at the root, not a subdirectory:</p>
+    <pre><code># bash / zsh — add to ~/.bashrc or ~/.zshrc, then source it:
+export LIBRADTRAN_V2_DIR="${HOME}/libradtran/v2.0.6"
+source ~/.bashrc
+
+# tcsh / csh:
+setenv LIBRADTRAN_V2_DIR "${HOME}/libradtran/v2.0.6"
+source ~/.cshrc</code></pre>
 
     <h3>Optional data packages (recommended)</h3>
     <ul>
@@ -309,12 +354,14 @@ python check_installation.py</code></pre>
       test for each solver and report pass/fail with helpful error messages.
     </div>
 
-    <p>Alternatively, run the basic example scripts directly:</p>
-    <pre><code># Test 1D libRadtran interface
-python examples/00_er3t_lrt.py
+    <p>Alternatively, run the example scripts directly:</p>
+    <pre><code>cd $ERTDIR/er3t/examples
 
-# Test 3D MCARaTS interface
-python examples/00_er3t_mca.py</code></pre>
+# Test 3D MCARaTS interface (no libRadtran required)
+python 00_er3t_mca.py
+
+# Test 1D libRadtran interface (requires Step 4)
+python 00_er3t_lrt.py</code></pre>
 
     <h2>CU Research Computing (Alpine / SLURM)</h2>
 
