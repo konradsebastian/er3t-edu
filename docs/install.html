@@ -341,27 +341,276 @@ source ~/.cshrc</code></pre>
       <code>apt-get</code> on Ubuntu) if missing.
     </div>
 
-    <h2>Step 6: Verify the Installation</h2>
+    <h2>Step 6: Run the MCARaTS Examples</h2>
 
-    <p>Run the verification script to confirm EaR³T and MCARaTS are working:</p>
+    <p>The six example scripts walk you from the simplest possible case (clear sky, 1D flux) up to
+    a full 3D radiance simulation from a generated cloud field. Each one is self-contained — you run
+    it, it produces a PNG figure and an HDF5 data file, and you can report back what you see.</p>
 
-    <pre><code>cd er3t/examples
-python check_installation.py</code></pre>
+    <div class="callout" style="border-left-color:#2980b9; background:#eaf3fb;">
+      <strong>📐 Core concept: Monte Carlo radiative transfer and statistical noise</strong>
 
-    <div class="callout">
-      🚧 <strong>Coming soon:</strong> The <code>check_installation.py</code> verification script
-      is currently being developed as part of this summer school. It will run a minimal end-to-end
-      test for each solver and report pass/fail with helpful error messages.
+      <p style="margin-top:0.8em;">MCARaTS works by simulating individual photons one at a time.
+      Each photon travels a random path — scattering, absorbing, reflecting — governed by the
+      optical properties of the atmosphere and cloud.  The result (flux, radiance) is the
+      <em>average</em> over many such photons.  Because each run uses a different set of random
+      numbers, two independent runs with the same inputs give slightly different answers.
+      That difference is the <strong>Monte Carlo noise</strong>.</p>
+
+      <p><strong>The fundamental scaling law:</strong></p>
+      <blockquote style="margin:0.5em 2em; font-style:italic;">
+        Noise ∝ 1/√N
+      </blockquote>
+      <p>where N is the number of photons per spectral bin.  To halve the noise you need
+      <em>four times</em> as many photons.  To achieve one-tenth the noise you need
+      one hundred times as many photons.  This is why production runs with 10⁸ photons
+      take hours while quick tests with 10⁶ take minutes.</p>
+
+      <p><strong>Not all quantities are equally noisy.</strong>
+      The relative noise (σ/mean) depends on the <em>signal strength</em>:
+      a small-signal quantity estimated from the same photon pool is always
+      noisier in relative terms than a large-signal one.  In a clear sky at 650 nm:</p>
+      <ul style="margin-top:0.3em;">
+        <li>Direct-beam flux is ~98% of the total — relative noise is tiny (~0.1% at 10⁶ photons).</li>
+        <li>Diffuse flux is ~2% of the total — relative noise is ~2% at 10⁶ photons.</li>
+        <li>Upwelling flux is tiny (no clouds, low albedo) — relative noise is ~2–4%.</li>
+      </ul>
+      <p>This is not a weakness of the simulation — it is a <em>fundamental statistical property</em>
+      of any Monte Carlo estimator, and it is the same reason that measuring a faint star
+      requires a longer telescope exposure than measuring a bright one.</p>
+
+      <p style="margin-bottom:0;"><strong>How to use the noise diagnostic in Example 01:</strong>
+      The script plots ±1σ shaded bands around each flux profile.
+      The terminal prints the percentage noise for each component.
+      Start with <code>photons=1e4</code> to see clearly visible bands, then increase
+      step by step to watch them shrink.  Aim for &lt;1% for scientific results.</p>
     </div>
 
-    <p>Alternatively, run the example scripts directly:</p>
-    <pre><code>cd $ERTDIR/er3t/examples
+    <div class="callout">
+      <strong>Before running:</strong> Make sure your conda environment is active and
+      <code>MCARATS_V010_EXE</code> is set in your current shell session.
+      <pre style="margin-top:0.5em; margin-bottom:0;"><code>conda activate er3t
+echo $MCARATS_V010_EXE    # must print the full path to the mcarats binary
+cd $ERTDIR/er3t/examples</code></pre>
+    </div>
 
-# Test 3D MCARaTS interface (no libRadtran required)
-python 00_er3t_mca.py
+    <h3>How the scripts are structured</h3>
 
-# Test 1D libRadtran interface (requires Step 4)
-python 00_er3t_lrt.py</code></pre>
+    <p>At the top of each script is a clearly marked <strong>student control block</strong> where
+    you can change three main settings before running:</p>
+
+    <table style="width:100%; border-collapse:collapse; margin:1em 0;">
+      <thead>
+        <tr style="background:#e8f0fa;">
+          <th style="padding:0.5em 0.8em; text-align:left; border:1px solid #ccc;">Parameter</th>
+          <th style="padding:0.5em 0.8em; text-align:left; border:1px solid #ccc;">What it controls</th>
+          <th style="padding:0.5em 0.8em; text-align:left; border:1px solid #ccc;">Suggested values to try</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;"><code>wavelength</code></td>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;">Wavelength in nm. Determines gas absorption strength, Rayleigh scattering intensity, and solar irradiance.</td>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;">400, 500, 650, 860, 1640</td>
+        </tr>
+        <tr style="background:#f9f9f9;">
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;"><code>photons</code></td>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;">Number of Monte Carlo photons per spectral bin. More photons = less noise = longer runtime.</td>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;"><code>1e6</code> (fast, for testing), <code>1e7</code> (recommended), <code>1e8</code> (production)</td>
+        </tr>
+        <tr>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;"><code>solver</code></td>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;"><strong>The key pedagogical toggle.</strong> <code>'3D'</code> = full horizontal photon transport; <code>'IPA'</code> = each column treated independently (standard satellite retrieval assumption).</td>
+          <td style="padding:0.5em 0.8em; border:1px solid #ccc;">Always run both and compare!</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>When you run a script it first prints a short <em>startup summary</em> to the terminal
+    echoing the settings it will use — confirm these look right before the simulation starts.
+    On a laptop at <code>photons=1e6</code> each script takes a few minutes.</p>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h3>Example 01 — Clear-sky flux profile</h3>
+
+    <p>The simplest case: sun shining through a clear, gas-only atmosphere.
+    No clouds, no aerosol. Good first test that EaR³T and MCARaTS are connected correctly.</p>
+
+    <pre><code>python 01_clear_sky_flux.py</code></pre>
+
+    <p><strong>Expected output:</strong></p>
+    <ul>
+      <li>Terminal: MCARaTS runs 3 × (number of spectral bins) jobs, prints progress.</li>
+      <li>PNG file: <code>01_clear_sky_flux-example_01_flux_clear_sky_3d.png</code> —
+          vertical profiles (0–20 km) of upwelling (red), total downwelling (blue),
+          direct beam (green), and diffuse downwelling (pink) flux.</li>
+    </ul>
+
+    <p><strong>What to look for:</strong> Direct beam decreases smoothly with depth as the
+    atmosphere absorbs/scatters it. Diffuse increases toward the surface. Upwelling is small
+    (no clouds to reflect). For a clear sky, <code>solver='IPA'</code> gives identical results
+    to <code>solver='3D'</code> — the difference only shows up once there are inhomogeneous clouds.
+    Try <code>wavelength=400</code> vs <code>wavelength=1640</code> to see the effect of Rayleigh
+    scattering (much stronger in the blue).</p>
+
+    <div class="callout" style="border-left-color:#e67e22;">
+      <strong>📊 Lesson: The Photon Toll — visualising Monte Carlo noise</strong>
+
+      <p style="margin-top:0.7em;">The script runs <code>Nrun</code> independent Monte Carlo batches with different random seeds.
+      The spread between them is pure statistical noise — not physics.
+      It is plotted as a semi-transparent <strong>shaded band (±1σ) around each profile</strong>.
+      The terminal also prints <code>Max noise: X.X%</code>.</p>
+
+      <p><strong>Try this exercise — reducing photons step by step:</strong></p>
+      <ol style="margin-top:0; margin-bottom:0.5em;">
+        <li>Set <code>photons = 1e4</code> and run. The bands will be extremely wide — the
+            simulation is essentially useless at this photon count.</li>
+        <li>Set <code>photons = 1e5</code>. Bands narrow but are still clearly visible,
+            especially on the diffuse component (smallest signal, highest relative noise).</li>
+        <li>Set <code>photons = 1e6</code> (default). Bands are visible but acceptable for
+            a quick test. Note that Max noise is typically 5–15%.</li>
+        <li>Set <code>photons = 1e7</code>. Bands become very narrow on the direct beam
+            but may still be visible on diffuse. Max noise typically drops to 1–3%.</li>
+        <li>Set <code>photons = 1e8</code>. Bands are barely visible. Max noise &lt; 1%.
+            This is production quality — but takes much longer.</li>
+      </ol>
+
+      <p><strong>Key observations:</strong></p>
+      <ul style="margin-top:0; margin-bottom:0.5em;">
+        <li>Noise scales as <strong>1/√N</strong> (halving noise requires 4× more photons).</li>
+        <li>The <strong>diffuse component is always noisiest</strong> in relative terms because
+            it is the smallest signal — any small absolute noise becomes a large percentage.
+            This matters when you need accurate diffuse-to-direct ratios.</li>
+        <li>Increasing <code>Nrun</code> gives a better <em>estimate</em> of the noise but
+            does not reduce it — only more photons does that.</li>
+        <li>For the 3D cloud examples (02–05), you need more photons than for clear sky
+            because the spatial heterogeneity adds another source of run-to-run variance.</li>
+      </ul>
+
+      <p style="margin-bottom:0;"><strong>Rule of thumb:</strong> Max noise &lt; 1% is good for
+      scientific use. Max noise &lt; 5% is acceptable for qualitative exploration.
+      If your shaded band is as wide as your mean profile, start over with more photons.</p>
+    </div>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h3>Example 02 — 3D cloud flux (LES field)</h3>
+
+    <p>Adds the LES cloud field. Both 3D and IPA solvers run automatically in one call and the
+    results are placed side-by-side in a single figure.
+    Requires <code>data/00_er3t_mca/aux/les.nc</code> from Step 2b.</p>
+
+    <pre><code>python 02_3d_cloud_flux.py</code></pre>
+
+    <p><strong>Expected output:</strong> A single PNG with two rows of flux maps —
+    row 1 from the full 3D solver, row 2 from IPA — showing F_up, F_down (total),
+    and F_down (diffuse) at the selected altitude level.</p>
+
+    <p><strong>What to look for:</strong> The spatial <em>patterns</em> differ between 3D and IPA
+    even though domain means are similar. In 3D, photons scatter sideways out of thick cloud
+    columns into neighbouring clear columns — producing brighter cloud edges, darker centres,
+    and smoother gradients. IPA treats every column independently so cloud edges are artificially
+    sharp. Setting <code>aod=0.0</code> in Example 03 should reproduce this result exactly.</p>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h3>Example 03 — 3D cloud + 1D aerosol layer, flux</h3>
+
+    <p>Extends Example 02 with a horizontally uniform (1D) aerosol layer at any altitude.
+    Runs both 3D and IPA solvers and produces a 7-panel figure: six flux maps (same layout as
+    Example 02) plus a domain-mean vertical profile spanning the full 0–20 km atmosphere.</p>
+
+    <pre><code>python 03_cloud_aerosol_flux.py</code></pre>
+
+    <p><strong>Sample output</strong> (default settings: AOD = 0.4, SSA = 0.9, aerosol at 5–8 km):</p>
+    <p><img src="assets/03_cloud_aerosol_flux-sample.png"
+            alt="Example 03 sample output — flux maps and vertical profile"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
+
+    <p><strong>Key parameters to explore:</strong></p>
+    <ul>
+      <li><code>aod</code> — aerosol optical depth; set to <code>0.0</code> to reproduce Example 02 exactly</li>
+      <li><code>ssa</code> — single scattering albedo: <code>0.9</code> = mostly scattering (sea salt),
+          <code>0.7</code> = absorbing (black carbon, smoke)</li>
+      <li><code>z_bot</code>, <code>z_top</code> — layer altitude [km]; the default (5–8 km) places the
+          aerosol above the cloud, but try <code>z_bot=0.5</code>, <code>z_top=2.5</code> to collocate
+          the aerosol with the cloud and observe the direct interaction</li>
+      <li><code>z_index</code> — which atmosphere level to show in the map panels (0 = surface,
+          3 = 3 km above-cloud view)</li>
+    </ul>
+
+    <p><strong>What to look for:</strong> An absorbing aerosol (low SSA) reduces downwelling
+    at the surface and heats the aerosol layer. A scattering aerosol (SSA ≈ 1) redirects flux
+    but the domain-mean surface downwelling changes less than you might expect.
+    Importantly, the vertical profile always shows <em>more diffuse radiation in 3D than IPA</em>:
+    photons escape laterally from cloud sides and scatter through neighbouring clear columns —
+    a horizontal transport effect that IPA cannot reproduce regardless of aerosol position.</p>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h3>Example 04 — 3D cloud + 3D aerosol layer, flux</h3>
+
+    <p>Same as Example 03 but the aerosol is now spatially inhomogeneous in 3D (varying in x and y),
+    concentrated near the surface. Uses Mie scattering phase functions for the cloud.</p>
+
+    <pre><code>python 04_3d_cloud_aerosol_3d_flux.py</code></pre>
+
+    <p><strong>Key parameters:</strong> <code>aer_ext_layer0</code> / <code>aer_ext_layer1</code>
+    control the extinction in the lowest two model levels. Set both to <code>0</code> to isolate
+    the effect of the Mie phase function vs. Henyey-Greenstein used in Examples 02–03.</p>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h3>Example 05 — 3D cloud radiance (satellite view)</h3>
+
+    <p>Switches from flux to <em>radiance</em>: simulates what a satellite at 705 km altitude
+    would observe looking straight down through the LES cloud field.
+    This is the most direct connection to real satellite imagery and to cloud retrieval biases.</p>
+
+    <pre><code>python 05_3d_cloud_radiance.py</code></pre>
+
+    <p><strong>Expected output:</strong> A grayscale image of simulated top-of-atmosphere
+    nadir reflectance — looks like a satellite scene. Bright patches = thick cloud, dark =
+    clear sky.</p>
+
+    <p><strong>What to look for when comparing 3D vs IPA:</strong></p>
+    <ul>
+      <li><em>Bright halos</em> next to cloud edges in 3D — photons scatter sideways out of the
+          cloud into the adjacent clear sky, making the clear region appear brighter than it should.</li>
+      <li><em>Darker cloud centres</em> in 3D vs IPA — photons escape out the sides of tall columns
+          instead of being reflected back up.</li>
+      <li>These effects cause 1D (IPA) satellite retrievals to <em>overestimate</em> cloud optical
+          thickness in the cores and <em>underestimate</em> it near the edges — the core motivation
+          for EaR³T.</li>
+    </ul>
+
+    <p><strong>Tip:</strong> Run with <code>photons=1e7</code> for a noticeably cleaner image.</p>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h3>Example 06 — Radiance from a generated cloud field</h3>
+
+    <p>No external data file needed. EaR³T's cloud generator creates a synthetic scene of
+    hemispheroidal (dome-shaped) cumulus clouds whose geometry you control directly.
+    Great for understanding how cloud morphology affects radiance and 3D effects.</p>
+
+    <pre><code>python 06_generated_cloud_radiance.py</code></pre>
+
+    <p><strong>Expected output:</strong> Three-panel figure — 3D view of cloud-top height,
+    2D cloud optical thickness map, and the simulated radiance image.</p>
+
+    <p><strong>Key parameters to explore:</strong></p>
+    <ul>
+      <li><code>cloud_frac_tgt</code> — fraction of cloudy pixels; try 0.05 (scattered Cu) vs 0.5 (broken Sc)</li>
+      <li><code>w2h_ratio</code> — width-to-height ratio; large values (10+) give flat stratus-like clouds;
+          small values (1–2) give tall, narrow cumulus</li>
+      <li><code>cloud_radii</code> — list of cloud radii in km; controls cloud size distribution</li>
+    </ul>
+
+    <p>Compare <code>solver='3D'</code> vs <code>solver='IPA'</code>: isolated cumulus clouds
+    show the strongest 3D effects because they have large surface-area-to-volume ratios — lots
+    of sidewall area for photons to escape through.</p>
 
     <h2>CU Research Computing (Alpine / SLURM)</h2>
 
