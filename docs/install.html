@@ -347,6 +347,49 @@ source ~/.cshrc</code></pre>
       <code>apt-get</code> on Ubuntu) if missing.
     </div>
 
+    <h2>Step 5: Verify your installation</h2>
+
+    <p>Before running the examples, confirm that all components are working correctly.
+    A verification script is provided in the examples directory:</p>
+
+    <pre><code>cd $ERTDIR/er3t-edu/er3t/examples
+conda activate er3t
+python verify_install.py</code></pre>
+
+    <p>The script checks seven things in order: Python version, core package imports,
+    atmosphere module, absorption databases, Mie phase function tables, and the MCARaTS
+    executable. Each line prints a symbol:</p>
+    <ul>
+      <li><strong>✓</strong> — component works correctly</li>
+      <li><strong>✗</strong> — something failed; a hint is printed below it</li>
+      <li><strong>—</strong> — skipped (expected; not needed for the summer school examples)</li>
+    </ul>
+
+    <p>A successful install looks like this:</p>
+    <pre><code>  ✓  Python 3.12.x
+  ✓  numpy / scipy / matplotlib / h5py / netCDF4
+  ✓  er3t  (installed at .../er3t-edu/er3t/er3t/__init__.py)
+  ✓  atm_atmmod — US standard atmosphere, 41 levels
+  —  abs_16g  (abs_16g.h5 not in data package — not needed for examples 01–05)
+  ✓  abs_rep  @ 500 nm, target=coarse
+  ✓  pha_mie_wc  @ 500 nm  (mean asymmetry g = 0.xxx)
+  ✓  MCARaTS executable found: .../mcarats-0.10.3/src/mcarats
+
+Summary: 6 passed  0 failed  1 skipped
+All required checks passed — your er3t installation is ready!</code></pre>
+
+    <div class="callout">
+      ⚠️ <strong>If MCARaTS shows ✗:</strong> the most common cause is that
+      <code>MCARATS_V010_EXE</code> is not set in the current shell session. Run
+      <code>echo $MCARATS_V010_EXE</code> — if it prints nothing, source your shell
+      startup file (<code>source ~/.bashrc</code> or <code>source ~/.zshrc</code>) and
+      try again.
+    </div>
+
+    <p>You can also test network connectivity and NASA Worldview access with the optional
+    flag (requires internet, ~30 seconds):</p>
+    <pre><code>python verify_install.py --worldview</code></pre>
+
     <h2>Step 6: Run the MCARaTS Examples</h2>
 
     <p>The five example scripts walk you from the simplest possible case (clear sky, 1D flux) up to

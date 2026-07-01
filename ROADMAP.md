@@ -135,7 +135,7 @@ Current state:
 - Reverted install-examples.sh to les.nc only (install.sh handles core data + REPTRAN)
 - Reset plot_only = False in 05_3d_cloud_radiance.py
 
-### Session 13 (2026-07-01)
+### Session 13 (2026-07-01, continued)
 - Updated roadmap with summer school timeline, test scripts, future examples
 - Discovered existing tests/00–04 are developer unit tests, not student-facing
 - Wrote `verify_install.py` — student-facing install verifier (7 checks + optional Worldview)
@@ -149,21 +149,16 @@ Current state:
   - Example 06 (`06_generated_cloud_radiance.py`): ALREADY WRITTEN, synthetic cloud generator,
     no real satellite data, no Earthdata needed
   - Future Example 07: Worldview satellite comparison (NOT YET WRITTEN, needs Earthdata)
+- **verify_install.py passed** on real er3t env; conda env confirmed → er3t-edu/er3t/
+- Added Step 5 "Verify your installation" to install.html with expected output and hints
 
 ---
 
 ## Pending Actions (in priority order)
 
-### 1. ⚠️ URGENT: Run verify_install.py end-to-end [deadline July 5]
-`verify_install.py` is written but has NOT been run on the real er3t environment yet.
-Run it on your machine with the er3t conda env active:
-```bash
-cd $ERTDIR/er3t-edu/er3t/examples
-conda activate er3t
-python verify_install.py
-python verify_install.py --worldview   # optional: test network/Worldview access
-```
-Fix anything that fails. Note: `abs_16g` check is expected to show `—` (skip), not a failure.
+### ✅ ~~1. Run verify_install.py end-to-end~~ — DONE (2026-07-01)
+All checks passed. Conda env confirmed pointing to `er3t-edu/er3t/er3t/__init__.py`.
+abs_16g shows `—` (expected skip). MCARaTS, REPTRAN, Mie phase functions all ✓.
 
 ### 2. ⚠️ URGENT: Student journey test [deadline July 5]
 Clone a fresh copy to `test-install2/` and follow install.html start to finish:
@@ -180,9 +175,9 @@ python verify_install.py
 python 01_clear_sky_flux.py
 ```
 
-### 3. ⚠️ URGENT: Add verify_install.py step to install.html [deadline July 5]
-Add a "Verify your installation" step in install.html between Step 2b (data download)
-and Step 3 (MCARaTS), directing students to run `verify_install.py`.
+### ✅ ~~3. Add verify_install.py step to install.html~~ — DONE (2026-07-01)
+Added as Step 5 in install.html (between libRadtran Step 4 and examples Step 6).
+Shows expected output, explains ✓/✗/— symbols, callout for MCARaTS env var fix.
 
 ### 4. Obtain abs_16g.h5 [post-summer-school]
 `abs_16g.h5` is not in the current teaching data package. The abs_16g absorption module
@@ -255,4 +250,4 @@ At the end of every working session:
 2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
 3. Note any pending verbal decisions that haven't been executed yet
 
-*Last updated: 2026-07-01 (session 13)*
+*Last updated: 2026-07-01 (session 13, end)*
