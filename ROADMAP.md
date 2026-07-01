@@ -1,6 +1,6 @@
 # EaR³T Education & Research — Project Roadmap
 *K. Sebastian Schmidt · University of Colorado Boulder / LASP*
-*Started: 2026-06-25 · Last updated: 2026-07-01 (session 12)*
+*Started: 2026-06-25 · Last updated: 2026-07-01 (session 13)*
 
 ---
 
@@ -56,19 +56,33 @@ data file, not the libRadtran RT solver. The libRadtran solver is NOT needed by 
 
 ---
 
-## Example Scripts (DECIDED: 01–05 only for summer school)
+## Example Scripts
 
-All scripts live in `er3t-edu/er3t/examples/`. Example 06 exists locally but is excluded from the summer school package.
+All scripts live in `er3t-edu/er3t/examples/`. Summer school (July 11) covers examples 01–05.
+Example 06 is written and available but not part of the summer school curriculum.
 
-| Script | Status | Description |
-|---|---|---|
-| `01_clear_sky_flux.py` | ✅ done | Clear-sky flux profile, Monte Carlo noise demo |
-| `02_3d_cloud_flux.py` | ✅ done | LES cloud flux, 3D vs IPA comparison |
-| `03_cloud_aerosol_flux.py` | ✅ done | Cloud + aerosol, 3 output figs (map/profile/xsection), km axes, (x0,y0) star |
-| `04_cloud_aerosol_spectral.py` | ✅ done | Spectral flux, 2×4 layout, ±1σ bands, x cross-section column |
-| `05_3d_cloud_radiance.py` | ✅ done | 3D radiance, 3 output figs, plot_only mode, Coakley r(τ) with fit |
-| `05_3d_cloud_radiance_plot.py` | ✅ done | Standalone plot-only script (no er3t import), for student modification |
-| `06_generated_cloud_radiance.py` | ⏸ excluded | Exists locally; not part of summer school package |
+| Script | Status | Data needed | Summer school |
+|---|---|---|---|
+| `01_clear_sky_flux.py` | ✅ done | core data | ✅ yes |
+| `02_3d_cloud_flux.py` | ✅ done | core + les.nc | ✅ yes |
+| `03_cloud_aerosol_flux.py` | ✅ done | core + les.nc | ✅ yes |
+| `04_cloud_aerosol_spectral.py` | ✅ done | core + les.nc | ✅ yes |
+| `05_3d_cloud_radiance.py` | ✅ done | core + les.nc | ✅ yes |
+| `05_3d_cloud_radiance_plot.py` | ✅ done | output of 05 | ✅ yes (standalone plot script) |
+| `06_generated_cloud_radiance.py` | ✅ done | core only | ⏸ available, not in curriculum |
+| `verify_install.py` | ✅ done | core + MCARaTS | ✅ yes (run right after install) |
+
+**What example 06 does** (synthetic cloud generator, no real satellite data):
+Uses `cld_gen_hem` to create user-controlled hemispheroidal cumulus clouds (configurable cloud
+fraction, radii, altitude, width-to-height ratio), then simulates nadir radiance with MCARaTS.
+Three output panels: 3D cloud-top height surface, COT map, simulated radiance. No external
+data download or Earthdata credentials required — only er3t core data + MCARaTS.
+Excluded from summer school curriculum but available for students who want to explore further.
+
+**Note on abs_16g**: `abs_16g.h5` is NOT present in the teaching data package. The `abs_16g`
+absorption module is therefore non-functional. This is flagged in `verify_install.py` as a
+skipped check (not needed for examples 01–06). Action item: obtain `abs_16g.h5` if needed
+for future examples (see Pending Actions).
 
 Key fixes applied to er3t package:
 - `abs_rep` fix: corrected spectral bin handling that caused shape mismatch in flux outputs
@@ -121,33 +135,39 @@ Current state:
 - Reverted install-examples.sh to les.nc only (install.sh handles core data + REPTRAN)
 - Reset plot_only = False in 05_3d_cloud_radiance.py
 
+### Session 13 (2026-07-01)
+- Updated roadmap with summer school timeline, test scripts, future examples
+- Discovered existing tests/00–04 are developer unit tests, not student-facing
+- Wrote `verify_install.py` — student-facing install verifier (7 checks + optional Worldview)
+  - Checks: Python, imports, atm_atmmod, abs_16g (skip/expected), abs_rep/REPTRAN, pha_mie_wc, MCARaTS exe
+  - `--worldview` flag tests Worldview RGB download (no credentials needed for RGB tiles)
+- Security fix: removed two hard-coded credentials from upstream er3t code (Hong Chen's):
+  - `daac.py`: Earthdata JWT token for user hoch4240 (expired Feb 2025) → now raises warning
+  - `util.py`: SMTP password for mail.hongchen.cz → now reads from env vars
+  - Hong Chen notified; he should rotate SMTP password
+- Clarified example numbering — two distinct things previously confused:
+  - Example 06 (`06_generated_cloud_radiance.py`): ALREADY WRITTEN, synthetic cloud generator,
+    no real satellite data, no Earthdata needed
+  - Future Example 07: Worldview satellite comparison (NOT YET WRITTEN, needs Earthdata)
+
 ---
 
 ## Pending Actions (in priority order)
 
-### 1. ⚠️ URGENT: Verify er3t test scripts run cleanly [deadline July 5]
-
-`er3t/tests/` contains four package unit tests that students should run right after
-installation, BEFORE the pedagogical examples. We have not verified these run yet.
-
-Scripts:
-- `tests/00_test_util.py` — utilities; also contains `test_download_worldview()` (see Future Examples)
-- `tests/01_test_atm.py` — atmosphere module
-- `tests/02_test_abs.py` — absorption module (exercises REPTRAN — most important to verify)
-- `tests/03_test_cld.py` — cloud module
-- `tests/04_test_pha.py` — phase function module
-
-Action needed:
-1. Run all five scripts in the er3t conda environment, confirm clean pass
-2. If any fail, fix them or note which to skip/defer
-3. Add a "Verify installation" section to install.html pointing students to these tests
-4. Note: REPTRAN is downloaded by install.sh and IS required by 02_test_abs.py.
-   libRadtran (the RT solver) is NOT needed by any test or example — this is resolved.
+### 1. ⚠️ URGENT: Run verify_install.py end-to-end [deadline July 5]
+`verify_install.py` is written but has NOT been run on the real er3t environment yet.
+Run it on your machine with the er3t conda env active:
+```bash
+cd $ERTDIR/er3t-edu/er3t/examples
+conda activate er3t
+python verify_install.py
+python verify_install.py --worldview   # optional: test network/Worldview access
+```
+Fix anything that fails. Note: `abs_16g` check is expected to show `—` (skip), not a failure.
 
 ### 2. ⚠️ URGENT: Student journey test [deadline July 5]
-Clone a fresh copy to `test-install2/` and follow install.html start to finish.
+Clone a fresh copy to `test-install2/` and follow install.html start to finish:
 ```bash
-cd ~/projects/er3t-edu   # or wherever test-install2 should live
 git clone https://github.com/konradsebastian/er3t-edu.git test-install2
 cd test-install2/er3t
 conda env create -f er3t-env.yml
@@ -156,41 +176,53 @@ pip install -e .
 bash install.sh
 cd examples
 bash install-examples.sh
-cd ../tests
-python 00_test_util.py
-python 01_test_atm.py
-python 02_test_abs.py
-python 03_test_cld.py
-python 04_test_pha.py
+python verify_install.py
+python 01_clear_sky_flux.py
 ```
 
-### 3. Add "Verify installation" section to install.html
-Once tests are confirmed working, add a Step after the er3t install that directs students
-to run the test scripts. This is what students do between installing and the July 11 session.
+### 3. ⚠️ URGENT: Add verify_install.py step to install.html [deadline July 5]
+Add a "Verify your installation" step in install.html between Step 2b (data download)
+and Step 3 (MCARaTS), directing students to run `verify_install.py`.
 
-### 4. Public/private repo hygiene [post-summer-school]
-Currently ROADMAP.md and any other internal files are in the public repo and visible to
-students. Options (decide after summer school):
-- Move internal docs to a separate private companion repo (cleanest)
+### 4. Obtain abs_16g.h5 [post-summer-school]
+`abs_16g.h5` is not in the current teaching data package. The abs_16g absorption module
+is non-functional. Not needed for examples 01–06 but may be needed for future examples.
+Action: ask Hong Chen where this file comes from / how to regenerate it.
+
+### 5. Earthdata credentials — decide when students need them [before Example 07]
+No credentials needed for examples 01–06 or verify_install.py (Worldview RGB is public).
+Future Example 07 (Worldview satellite comparison) will require Earthdata credentials.
+When that example is developed, add a prerequisite step to install.html:
+  - Create Earthdata account at https://urs.earthdata.nasa.gov
+  - Generate a token and add to shell rc: `export EARTHDATA_TOKEN="..."`
+
+### 6. Public/private repo hygiene [post-summer-school]
+ROADMAP.md and internal files are publicly visible in the repo. Options:
+- Move to a separate private companion repo (cleanest)
 - Move to a non-default branch
-For now: not a blocker; students are unlikely to look, and content is not harmful.
+Not a blocker now; students are unlikely to look, content is not sensitive.
 
 ---
 
 ## Future Examples (post-summer-school, needs student coordination)
 
-### Example 06: NASA Worldview — Radiance Self-Consistency
+**Numbering note**: Example 06 (`06_generated_cloud_radiance.py`) already exists as a
+synthetic cloud generator. The future satellite examples are numbered 07 and 08.
+
+### Example 07: NASA Worldview — Radiance Self-Consistency (NOT YET WRITTEN)
 Pull L2 satellite products for a user-chosen region/date from NASA Worldview, run er3t to
 predict the radiance a satellite should observe given the retrieved cloud/aerosol state,
 then compare with what the satellite actually measured. This is the "radiance
 self-consistency" approach described in Chen et al. (2023).
 
-Note: `er3t/tests/00_test_util.py` already contains `test_download_worldview()` which
-may provide relevant infrastructure.
+Prerequisites for students: Earthdata account + token (see Pending Action #5).
+Note: `er3t/util/daac.py` already contains `download_worldview_image()` and related
+Earthdata download infrastructure. `er3t/tests/00_test_util.py` has a `test_download_worldview()`
+prototype. These are useful starting points.
 
 Action: coordinate with Schmidt Lab students.
 
-### Example 07: Arctic Aircraft / Satellite Irradiance Comparison (tentative)
+### Example 08: Arctic Aircraft / Satellite Irradiance Comparison (tentative, NOT YET WRITTEN)
 Use NASA research aircraft flights from 2024 Arctic campaign. Automatically find the closest
 satellite overpass in time. Predict aircraft irradiance from satellite observations and
 compare with actual aircraft measurements.
@@ -223,4 +255,4 @@ At the end of every working session:
 2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
 3. Note any pending verbal decisions that haven't been executed yet
 
-*Last updated: 2026-07-01 (session 12)*
+*Last updated: 2026-07-01 (session 13)*
