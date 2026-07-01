@@ -1,6 +1,6 @@
 # EaR³T Education & Research — Project Roadmap
 *K. Sebastian Schmidt · University of Colorado Boulder / LASP*
-*Started: 2026-06-25 · Last updated: 2026-07-01*
+*Started: 2026-06-25 · Last updated: 2026-07-01 (session 12)*
 
 ---
 
@@ -33,9 +33,7 @@ cd er3t-edu/er3t
 pip install -e .
 ```
 
-**Status: PENDING** — `er3t/` subdirectory not yet committed to the repo.
-Currently lives at `~/projects/er3t-edu/test-install/er3t/` (local only).
-Action needed: copy into `er3t-edu/er3t/`, commit, push.
+**Status: DONE** — `er3t/` committed to repo as of 2026-07-01 (commit 946ef1e).
 
 ---
 
@@ -48,8 +46,13 @@ Two datasets hosted on Schmidt Lab Google Drive:
 | er3t core data (REPTRAN, aux) | `er3t-data.tar.gz` (or similar) | `15YymaUt1i3ad45OZI4kXFDZZlxCNVuGU` | ~180 MB | all examples |
 | LES cloud field | `les.nc` | `1cmrZDaCwoQNhaoPGhJ9OhSVEpDU9h-gg` | ~209 MB | examples 02–05 |
 
-Both downloaded via `install-examples.sh` using `gdown`.
-MCARaTS, hparx, mcarats-examples tarballs are hosted directly in `er3t-edu/source/`.
+Download workflow:
+- `er3t/install.sh` — downloads er3t core data + REPTRAN gas absorption database
+- `er3t/examples/install-examples.sh` — downloads les.nc only
+- MCARaTS, hparx, mcarats-examples tarballs are hosted directly in `er3t-edu/source/`
+
+Note: REPTRAN is from the libRadtran *project* (Gasteiger et al. 2014) but is a standalone
+data file, not the libRadtran RT solver. The libRadtran solver is NOT needed by any example.
 
 ---
 
@@ -122,32 +125,94 @@ Current state:
 
 ## Pending Actions (in priority order)
 
-### 1. Test full student install journey [next priority]
-Clone fresh copy of er3t-edu to a clean directory, follow install.html exactly, run example 01.
+### 1. ⚠️ URGENT: Verify er3t test scripts run cleanly [deadline July 5]
+
+`er3t/tests/` contains four package unit tests that students should run right after
+installation, BEFORE the pedagogical examples. We have not verified these run yet.
+
+Scripts:
+- `tests/00_test_util.py` — utilities; also contains `test_download_worldview()` (see Future Examples)
+- `tests/01_test_atm.py` — atmosphere module
+- `tests/02_test_abs.py` — absorption module (exercises REPTRAN — most important to verify)
+- `tests/03_test_cld.py` — cloud module
+- `tests/04_test_pha.py` — phase function module
+
+Action needed:
+1. Run all five scripts in the er3t conda environment, confirm clean pass
+2. If any fail, fix them or note which to skip/defer
+3. Add a "Verify installation" section to install.html pointing students to these tests
+4. Note: REPTRAN is downloaded by install.sh and IS required by 02_test_abs.py.
+   libRadtran (the RT solver) is NOT needed by any test or example — this is resolved.
+
+### 2. ⚠️ URGENT: Student journey test [deadline July 5]
+Clone a fresh copy to `test-install2/` and follow install.html start to finish.
 ```bash
-cd /tmp
-git clone https://github.com/konradsebastian/er3t-edu.git
-cd er3t-edu/er3t
+cd ~/projects/er3t-edu   # or wherever test-install2 should live
+git clone https://github.com/konradsebastian/er3t-edu.git test-install2
+cd test-install2/er3t
 conda env create -f er3t-env.yml
 conda activate er3t
 pip install -e .
 bash install.sh
 cd examples
 bash install-examples.sh
-python 01_clear_sky_flux.py
+cd ../tests
+python 00_test_util.py
+python 01_test_atm.py
+python 02_test_abs.py
+python 03_test_cld.py
+python 04_test_pha.py
 ```
 
-### 2. Verify libRadtran installation requirement
-Check which examples need libRadtran and document in install.html if needed.
+### 3. Add "Verify installation" section to install.html
+Once tests are confirmed working, add a Step after the er3t install that directs students
+to run the test scripts. This is what students do between installing and the July 11 session.
+
+### 4. Public/private repo hygiene [post-summer-school]
+Currently ROADMAP.md and any other internal files are in the public repo and visible to
+students. Options (decide after summer school):
+- Move internal docs to a separate private companion repo (cleanest)
+- Move to a non-default branch
+For now: not a blocker; students are unlikely to look, and content is not harmful.
+
+---
+
+## Future Examples (post-summer-school, needs student coordination)
+
+### Example 06: NASA Worldview — Radiance Self-Consistency
+Pull L2 satellite products for a user-chosen region/date from NASA Worldview, run er3t to
+predict the radiance a satellite should observe given the retrieved cloud/aerosol state,
+then compare with what the satellite actually measured. This is the "radiance
+self-consistency" approach described in Chen et al. (2023).
+
+Note: `er3t/tests/00_test_util.py` already contains `test_download_worldview()` which
+may provide relevant infrastructure.
+
+Action: coordinate with Schmidt Lab students.
+
+### Example 07: Arctic Aircraft / Satellite Irradiance Comparison (tentative)
+Use NASA research aircraft flights from 2024 Arctic campaign. Automatically find the closest
+satellite overpass in time. Predict aircraft irradiance from satellite observations and
+compare with actual aircraft measurements.
+
+Action: coordinate with Schmidt Lab students.
+
+---
+
+## Summer School Timeline (DECIDED)
+
+- **Summer school**: July 6–11, 2026 — https://c3sar.de/summer-school/
+- **er3t day**: July 11 (1.5 hr slot)
+- **Website go-live deadline**: July 5 ← only 4 days away as of 2026-07-01
+- **Office hours**: July 6–10, students can ask installation questions
+- **Student expectations by July 5**: Install er3t, run the test scripts (see below). Examples 01–05 are available to try; covered on July 11.
 
 ---
 
 ## Open Questions
 
-- Summer school date / how much lead time for pre-installation office hours?
 - Should student projects be Jupyter notebooks or Python scripts?
 - What compute resources do students have (laptops only, or Alpine cluster)?
-- libRadtran installation — needed for which examples? (flagged as tomorrow's task in earlier session)
 
 ---
 
@@ -158,4 +223,4 @@ At the end of every working session:
 2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
 3. Note any pending verbal decisions that haven't been executed yet
 
-*Last updated: 2026-07-01 (session 11)*
+*Last updated: 2026-07-01 (session 12)*
