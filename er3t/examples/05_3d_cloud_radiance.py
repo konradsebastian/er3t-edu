@@ -82,7 +82,7 @@ import er3t
 # ║                     STUDENT CONTROL BLOCK                              ║
 # ╠══════════════════════════════════════════════════════════════════════════╣
 
-plot_only = True        # *** FAST RE-PLOT MODE ***
+plot_only = False       # set True to skip RT and re-plot from saved HDF5 files
                         # True  → skip RT entirely; regenerate all figures
                         #         from the HDF5 files saved by the last run.
                         #         Use this to tweak plots without re-running MC.

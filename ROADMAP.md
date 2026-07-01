@@ -81,9 +81,12 @@ Current state:
 - ✅ Full installation walkthrough (conda env, MCARaTS compile, er3t install)
 - ✅ Examples 01–05 described with expected outputs and what to look for
 - ✅ Example 06 removed
-- ❌ Clone URL still points to `hong-chen/er3t` → needs to change to `konradsebastian/er3t-edu`
-- ❌ Core data download step missing from install instructions
-- ❌ install-examples.sh step needs updating to reflect both datasets
+- ✅ Clone URL updated to `konradsebastian/er3t-edu`
+- ✅ pip install path updated to `cd er3t-edu/er3t`
+- ✅ Directory structure diagram updated to show `er3t-edu/er3t/`
+- ✅ All `$ERTDIR/er3t/` paths updated to `$ERTDIR/er3t-edu/er3t/`
+- ✅ Core data download step present (install.sh downloads REPTRAN + core data)
+- ✅ install-examples.sh downloads les.nc only (not redundant with install.sh)
 
 ---
 
@@ -110,38 +113,32 @@ Current state:
 - Example 05_plot: standalone plotting script with no er3t dependency
 - Updated install.html for examples 01–05, removed example 06, "five examples" throughout
 - Pushed website update to konradsebastian/er3t-edu
+- Embedded er3t teaching fork as er3t/ subdirectory in er3t-edu (commit 946ef1e)
+- Updated install.html: clone URL → konradsebastian/er3t-edu, all paths → er3t-edu/er3t/
+- Reverted install-examples.sh to les.nc only (install.sh handles core data + REPTRAN)
+- Reset plot_only = False in 05_3d_cloud_radiance.py
 
 ---
 
 ## Pending Actions (in priority order)
 
-### 1. Embed er3t into er3t-edu repo [BLOCKING everything else]
+### 1. Test full student install journey [next priority]
+Clone fresh copy of er3t-edu to a clean directory, follow install.html exactly, run example 01.
 ```bash
-# From your terminal:
-cp -r ~/projects/er3t-edu/test-install/er3t ~/projects/er3t-edu/er3t
-cd ~/projects/er3t-edu
-echo "er3t/tmp-data/" >> .gitignore
-echo "er3t/**/__pycache__/" >> .gitignore
-echo "er3t/**/*.pyc" >> .gitignore
-git add er3t/
-git add .gitignore
-git commit -m "Add er3t teaching fork as er3t/ subdirectory"
-git push origin main
-```
-
-### 2. Update install.html clone URL
-Change `git clone https://github.com/hong-chen/er3t.git` →
-```bash
+cd /tmp
 git clone https://github.com/konradsebastian/er3t-edu.git
-cd er3t-edu/er3t && pip install -e .
+cd er3t-edu/er3t
+conda env create -f er3t-env.yml
+conda activate er3t
+pip install -e .
+bash install.sh
+cd examples
+bash install-examples.sh
+python 01_clear_sky_flux.py
 ```
-(I will prepare this edit once step 1 is done.)
 
-### 3. Wire core data download into install-examples.sh
-Already done in the script — needs push after step 1.
-
-### 4. Test full student install journey
-Clone fresh copy of er3t-edu, follow install.html exactly, run example 01.
+### 2. Verify libRadtran installation requirement
+Check which examples need libRadtran and document in install.html if needed.
 
 ---
 
@@ -161,4 +158,4 @@ At the end of every working session:
 2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
 3. Note any pending verbal decisions that haven't been executed yet
 
-*Last updated: 2026-07-01*
+*Last updated: 2026-07-01 (session 11)*

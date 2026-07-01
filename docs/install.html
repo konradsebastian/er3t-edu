@@ -15,7 +15,7 @@
       <li><a href="science.html">Science</a></li>
       <li><a href="install.html" class="active">Installation</a></li>
       <li><a href="projects.html">Projects</a></li>
-      <li><a href="https://github.com/hong-chen/er3t" target="_blank">GitHub ↗</a></li>
+      <li><a href="https://github.com/konradsebastian/er3t-edu" target="_blank">GitHub ↗</a></li>
     </ul>
   </nav>
 
@@ -110,7 +110,10 @@ sudo apt-get install git gfortran gcc build-essential</code></pre>
     <code>~/ert3d</code> or <code>~/projects/er3t-install</code>.</p>
 
     <pre><code>ERTDIR/
-  er3t/                     ← EaR³T Python package  (Step 1)
+  er3t-edu/
+    er3t/                   ← EaR³T teaching fork    (Step 1)
+    docs/
+    source/
   hparx/                    ← hparx Fortran library  (Step 3a)
   mcarats-0.10.3/           ← MCARaTS solver         (Step 3b)
   mcarats-examples-0.10.3/  ← MCARaTS example inputs (optional)</code></pre>
@@ -144,12 +147,15 @@ cd $ERTDIR</code></pre>
 
     <h2>Step 1: Conda Environment</h2>
 
-    <p>Clone the EaR³T repository into <code>$ERTDIR/er3t/</code> and set up the conda environment:</p>
+    <p>Clone the EaR³T teaching repository and set up the conda environment:</p>
     <pre><code>cd $ERTDIR
-git clone https://github.com/hong-chen/er3t.git
-cd er3t
+git clone https://github.com/konradsebastian/er3t-edu.git
+cd er3t-edu/er3t
 conda env create -f er3t-env.yml
 conda activate er3t</code></pre>
+    <p>This clones the Schmidt Lab teaching fork of EaR³T, which contains the summer-school
+    examples and all modifications described in this guide. The original upstream research
+    code lives at <a href="https://github.com/hong-chen/er3t" target="_blank">hong-chen/er3t</a>.</p>
 
     <p>The environment includes all required Python packages. Key dependencies:</p>
     <ul>
@@ -161,7 +167,7 @@ conda activate er3t</code></pre>
 
     <h2>Step 2: Install EaR³T (Python package)</h2>
 
-    <pre><code>cd er3t
+    <pre><code>cd $ERTDIR/er3t-edu/er3t
 pip install -e .</code></pre>
 
     <p>The conda environment from Step 1 installed all of EaR³T's <em>dependencies</em> (numpy,
@@ -182,8 +188,8 @@ pip install -e .</code></pre>
     git repository (it's too large) and must be downloaded separately using the provided
     install script, which uses <code>gdown</code> (already in your conda environment).</p>
 
-    <p>Run from inside <code>$ERTDIR/er3t/</code>:</p>
-    <pre><code>cd $ERTDIR/er3t
+    <p>Run from inside <code>$ERTDIR/er3t-edu/er3t/</code>:</p>
+    <pre><code>cd $ERTDIR/er3t-edu/er3t
 bash install.sh</code></pre>
 
     <p>This also downloads the REPTRAN gas absorption database directly from the
@@ -202,7 +208,7 @@ bash install.sh</code></pre>
     <p>The example scripts need auxiliary input files (LES cloud fields etc.)
     that are too large for git. Download them with:</p>
 
-    <pre><code>cd $ERTDIR/er3t/examples
+    <pre><code>cd $ERTDIR/er3t-edu/er3t/examples
 bash install-examples.sh</code></pre>
 
     <h2>Step 3: Install MCARaTS (3D Monte Carlo solver)</h2>
@@ -391,7 +397,7 @@ source ~/.cshrc</code></pre>
       <code>MCARATS_V010_EXE</code> is set in your current shell session.
       <pre style="margin-top:0.5em; margin-bottom:0;"><code>conda activate er3t
 echo $MCARATS_V010_EXE    # must print the full path to the mcarats binary
-cd $ERTDIR/er3t/examples</code></pre>
+cd $ERTDIR/er3t-edu/er3t/examples</code></pre>
     </div>
 
     <h3>How the scripts are structured</h3>
@@ -651,7 +657,7 @@ sbatch my_script.py</code></pre>
 
     <h2>Resources</h2>
     <ul>
-      <li><a href="https://github.com/hong-chen/er3t" target="_blank">EaR³T GitHub repository</a></li>
+      <li><a href="https://github.com/konradsebastian/er3t-edu" target="_blank">EaR³T GitHub repository</a></li>
       <li><a href="https://er3t.readthedocs.io" target="_blank">EaR³T documentation (readthedocs)</a></li>
       <li><a href="http://www.libradtran.org" target="_blank">libRadtran website</a></li>
       <li><a href="https://sites.google.com/site/mcarats/download" target="_blank">MCARaTS v0.10.3 (Iwabuchi, Tohoku University)</a> — also mirrored in <a href="https://github.com/konradsebastian/er3t-edu/tree/main/source" target="_blank">this repo's source/ folder</a></li>
@@ -661,7 +667,7 @@ sbatch my_script.py</code></pre>
 
   <footer class="footer">
     <p>
-      EaR³T · <a href="https://github.com/hong-chen/er3t" target="_blank">GitHub</a>
+      EaR³T · <a href="https://github.com/konradsebastian/er3t-edu" target="_blank">GitHub</a>
       · <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. 2023</a>
       · GPL-3.0
     </p>
