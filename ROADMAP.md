@@ -1,199 +1,164 @@
 # EaR³T Education & Research — Project Roadmap
 *K. Sebastian Schmidt · University of Colorado Boulder / LASP*
-*Started: 2026-06-25*
+*Started: 2026-06-25 · Last updated: 2026-07-01*
 
 ---
 
 ## Vision
 
-Build a GitHub Pages website for teaching and summer school use centered on EaR³T (Education and Research 3D Radiative Transfer Toolbox), developed in the Schmidt lab at CU Boulder over the past ~10 years. The site serves as the home base for students to understand the scientific motivation, install the tool, and work through projects that take them from the 1D view of the world to a 3D-aware one.
+Build a GitHub Pages website for teaching and summer school use centered on EaR³T (Education and Research 3D Radiative Transfer Toolbox), developed in the Schmidt lab at CU Boulder. The site serves as the home base for students to install the tool and work through examples that take them from the 1D view of the world to a 3D-aware one.
 
-The website will serve two audiences:
+Two audiences:
 - **Summer school participants** (immediate need: 1.5-hr slot + pre-school office hours)
-- **Courses at CU Boulder** (future expansion: ATOC courses on radiative transfer and remote sensing)
+- **Courses at CU Boulder** (future expansion)
 
-The core pedagogical arc: *Why does 3D matter? → How do we model it? → Do it yourself.*
-
----
-
-## EaR³T: What It Is and Why It Matters
-
-### What EaR³T does
-
-EaR³T is a modularized Python package that automates end-to-end 3D radiative transfer (RT) calculations. It:
-- Downloads and pre-processes satellite data (MODIS, VIIRS, OCO-2, AHI, Worldview, LAADS DAAC, GES DISC)
-- Sets up atmospheric optical properties (gases via correlated-k / REPTRAN, clouds via Mie theory, surface via Cox-Munk / LSRT)
-- Runs RT simulations through pluggable solvers: **MCARaTS** (3D Monte Carlo), **libRadtran** (1D, benchmark), **SHDOM** (planned)
-- Outputs radiance and irradiance fields in HDF5 format for analysis and closure studies
-
-It is benchmarked against libRadtran, which is itself one of the most widely used 1D RT packages in atmospheric science.
-
-GitHub: https://github.com/hong-chen/er3t  
-Docs: https://er3t.readthedocs.io  
-DOI: https://doi.org/10.5194/amt-16-1971-2023
-
-### The core science problem
-
-Conventional satellite cloud retrievals use 1D (independent pixel approximation, IPA) radiative transfer — treating each pixel as a horizontally infinite, homogeneous column. Nature is not 1D. In real, spatially inhomogeneous cloud fields, photons scatter horizontally between columns (net horizontal photon transport), creating 3D-RT effects that bias retrieved cloud properties and derived irradiances.
-
-**EaR³T's approach**: Use 3D-RT to simulate what the satellite *should* have observed given the retrieved cloud field (radiance self-consistency / closure). Inconsistency between simulated and measured radiances reveals and quantifies the 3D bias.
+Core pedagogical arc: *Why does 3D matter? → How do we model it? → Do it yourself.*
 
 ---
 
-## Applications Summary (from peer-reviewed papers)
+## Repository Strategy (DECIDED)
 
-### Core paper
-**Chen et al. (2023)** — *The Education and Research 3D Radiative Transfer Toolbox (EaR³T)* — AMT 16, 1971–2000. DOI: 10.5194/amt-16-1971-2023
+**Single repo: `konradsebastian/er3t-edu`** hosts everything:
+- `docs/`        — GitHub Pages website
+- `source/`      — MCARaTS, hparx, mcarats-examples tarballs (mirrored here to avoid external link rot)
+- `er3t/`        — Teaching fork of Hong Chen's er3t package (our modified version)
+- `ROADMAP.md`   — This file
 
-Four application blueprints:
-1. **OCO-2 radiance closure** — 3D-RT simulation of OCO-2 radiances from MODIS cloud products; demonstrates 3D-induced radiance inconsistency over inhomogeneous cloud scenes (SW Colorado).
-2. **MODIS radiance closure** — Self-consistency test of MODIS L2 cloud products using 3D-RT; shows IPA COT low bias due to horizontal photon transport.
-3. **CAMP²Ex irradiance closure** — Geostationary AHI cloud products → simulated irradiance along *all* CAMP²Ex aircraft flight legs → comparison with SP-NS airborne measurements. Finds 10% low bias in satellite-derived cloud transmittance attributable to coarse GEO resolution + 3D effects.
-4. **CNN cloud retrieval + radiance closure** — Applies a CNN (trained on LES-derived 3D-RT synthetic data) to high-resolution CAMP²Ex camera imagery; CNN-based COT retrievals yield better 3D radiance consistency than IPA, demonstrating bias mitigation.
+The original `hong-chen/er3t` remains the upstream research codebase. Our `er3t/` subdirectory is explicitly a **teaching fork** — simplified examples, student-facing control blocks, pedagogical annotations. It is NOT intended to be merged back upstream.
 
-### Application papers
+Students install with:
+```bash
+git clone https://github.com/konradsebastian/er3t-edu.git
+cd er3t-edu/er3t
+pip install -e .
+```
 
-**Nataraja et al. (2022)** — *Segmentation-based multi-pixel COT retrieval using CNN* — AMT 15, 5181. DOI: 10.5194/amt-15-5181-2022  
-→ **Application type: ML synthetic data generation**  
-EaR³T + MCARaTS generates 3D-RT radiance fields from LES cloud scenes to train a U-Net CNN that corrects IPA bias in COT retrievals. Demonstrates that accounting for spatial context via CNN substantially outperforms IPA across all cloud morphologies (stratocumulus through cumulus).
+**Status: PENDING** — `er3t/` subdirectory not yet committed to the repo.
+Currently lives at `~/projects/er3t-edu/test-install/er3t/` (local only).
+Action needed: copy into `er3t-edu/er3t/`, commit, push.
 
-**Yu-Wen Chen et al. (2024, preprint)** — *Mitigation of OCO-2 CO2 biases near clouds using EaR3T* — EGUsphere 2024-1936 (in review at AMT)  
-→ **Application type: Trace-gas retrieval bias correction**  
-EaR3T-OCO extension uses MCARaTS to compute 3D-RT spectral perturbations on OCO-2 radiances from nearby clouds. Linear approximation (slope + intercept per band) gives ~100× speedup. Physics-based pre-correction of OCO-2 spectra reduces XCO2 biases from >2 ppm (footprint) to <0.7 ppm (regional), constituting the first physics-based 3D-RT correction for OCO-2/3.
+---
 
-**Gristey et al. (2020)** — GRL DOI: 10.1029/2020GL090152  
-→ **Application type: Surface irradiance from satellite imagery** (full abstract not retrieved — JS-rendered page; to be confirmed)
+## Data Sources (DECIDED)
 
-**Chen et al. (2022)** — JGR-Atmos DOI: 10.1029/2022JD036822  
-→ **Application type: EaR³T toolbox / radiance simulator** (full abstract not retrieved — JS-rendered page; to be confirmed)
+Two datasets hosted on Schmidt Lab Google Drive:
 
-### Application taxonomy (for intro talk)
+| Dataset | File | Google Drive ID | Size | Used by |
+|---|---|---|---|---|
+| er3t core data (REPTRAN, aux) | `er3t-data.tar.gz` (or similar) | `15YymaUt1i3ad45OZI4kXFDZZlxCNVuGU` | ~180 MB | all examples |
+| LES cloud field | `les.nc` | `1cmrZDaCwoQNhaoPGhJ9OhSVEpDU9h-gg` | ~209 MB | examples 02–05 |
 
-| Theme | Representative paper | Key message |
+Both downloaded via `install-examples.sh` using `gdown`.
+MCARaTS, hparx, mcarats-examples tarballs are hosted directly in `er3t-edu/source/`.
+
+---
+
+## Example Scripts (DECIDED: 01–05 only for summer school)
+
+All scripts live in `er3t-edu/er3t/examples/`. Example 06 exists locally but is excluded from the summer school package.
+
+| Script | Status | Description |
 |---|---|---|
-| Radiance closure / 3D bias quantification | Chen et al. 2023 (App. 1, 2) | 1D retrievals are inconsistent with 3D reality; closure reveals the gap |
-| Irradiance closure / campaign-scale validation | Chen et al. 2023 (App. 3) | EaR³T enables systematic (not case-study) closure across entire field campaigns |
-| ML synthetic data generation | Nataraja et al. 2022; Chen et al. 2023 (App. 4, 5) | 3D-RT is the engine behind next-gen ML cloud retrievals |
-| Trace-gas retrieval bias mitigation | Yu-Wen Chen et al. 2024 | 3D cloud effects contaminate CO₂ retrievals; 3D-RT corrections are tractable |
-| Surface irradiance from imagery | Gristey et al. 2020 | (to be confirmed) |
+| `01_clear_sky_flux.py` | ✅ done | Clear-sky flux profile, Monte Carlo noise demo |
+| `02_3d_cloud_flux.py` | ✅ done | LES cloud flux, 3D vs IPA comparison |
+| `03_cloud_aerosol_flux.py` | ✅ done | Cloud + aerosol, 3 output figs (map/profile/xsection), km axes, (x0,y0) star |
+| `04_cloud_aerosol_spectral.py` | ✅ done | Spectral flux, 2×4 layout, ±1σ bands, x cross-section column |
+| `05_3d_cloud_radiance.py` | ✅ done | 3D radiance, 3 output figs, plot_only mode, Coakley r(τ) with fit |
+| `05_3d_cloud_radiance_plot.py` | ✅ done | Standalone plot-only script (no er3t import), for student modification |
+| `06_generated_cloud_radiance.py` | ⏸ excluded | Exists locally; not part of summer school package |
+
+Key fixes applied to er3t package:
+- `abs_rep` fix: corrected spectral bin handling that caused shape mismatch in flux outputs
+- All examples use `target='flux'` (not `target='flux0'`) to get full 21-level output
 
 ---
 
-## Website Structure
+## Website (docs/install.html)
 
-### Section 1: Science Introduction and Context
-- What is radiative transfer? (1D baseline: libradtran)
-- Why does 3D matter? (IPA bias, horizontal photon transport, cloud inhomogeneity)
-- The EaR³T approach: from imagery to 3D-RT to closure
-- Applications overview (linked to papers, summary figures)
-- **Slides**: 1.5-hr summer school talk (to be uploaded as PDF/HTML)
-- **References**: all papers
+Hosted at: https://konradsebastian.github.io/er3t-edu/install.html
 
-### Section 2: Installation Guide
-- System requirements and dependencies
-- **EaR³T** (Python package, GitHub)
-- **MCARaTS** (Fortran, 3D Monte Carlo solver) — with compiled binaries if feasible
-- **SHDOM** (Fortran, deterministic 3D solver) — optional
-- **libRadtran** (1D benchmark solver)
-- **Data packages**: REPTRAN, ic_yang2013, optprop (for libRadtran), etc.
-- **Conda environment** setup (`er3t-env.yml`)
-- **Verification script**: `check_installation.py` — runs a minimal end-to-end test confirming all solvers work
-- CU Research Computing / SLURM setup (for students on Alpine)
-
-### Section 3: Projects / Homework
-
-#### Project A: Polar satellite data → surface irradiance (Arctic case)
-Use MODIS/VIIRS imagery over NW Greenland (Pituffik/Thule area) from a specific overpass to predict downwelling shortwave irradiance at the surface. Compare against surface radiometer observations (e.g., GEOS network or ARCSIX ground station). Quantify 1D vs. 3D difference.
-
-#### Project B: Geostationary/polar imagery → aircraft irradiance along flight track
-Use AHI or MODIS cloud products to simulate irradiance along an aircraft flight track (e.g., CAMP²Ex or ARCSIX). Compare with SP-NS or pyranometer measurements. Identify segments where 3D bias is largest and explain why.
-
-#### Project C: Radiance closure (WorldView + MODIS)
-Use a configurable cloud scene from NASA WorldView as starting point. Run 1D IPA retrieval → get COT field → run 3D-RT → compare simulated radiance to original measurement. Identify inconsistency. Then: estimate what bias in surface irradiance the COT bias causes. Advanced variant: apply CNN retrieval and compare closure metrics.
-
-#### Project D: Sub-pixel inhomogeneity (spectral)
-Simulate a partially cloud-filled pixel (cloud under-filling an imager resolution element). Show what a 1D retrieval returns (effective OT, no skill on cloud fraction). Then explore whether spectral information (multi-channel reflectance) can help disentangle sub-pixel cloud fraction from optical thickness. Ranges from simple (homogeneous stratus → stratocumulus → cumulus) to research-grade.
-
-#### Project E (research-track): Spectral information content for vertical cloud structure
-Based on Buggee et al. (passive shortwave cloud vertical structure retrievals): simulate 3D LES cloud scenes → 1D synthetic reflectance spectra → check whether 3D perturbations reduce spectral information content. Compare across cloud scene types (stratus, Sc, Cu).
+Current state:
+- ✅ Full installation walkthrough (conda env, MCARaTS compile, er3t install)
+- ✅ Examples 01–05 described with expected outputs and what to look for
+- ✅ Example 06 removed
+- ❌ Clone URL still points to `hong-chen/er3t` → needs to change to `konradsebastian/er3t-edu`
+- ❌ Core data download step missing from install instructions
+- ❌ install-examples.sh step needs updating to reflect both datasets
 
 ---
 
-## GitHub / Repository Strategy
+## Completed Work (chronological)
 
-**Options:**
-1. **Fork `hong-chen/er3t`** into `kss-schmidt/er3t` (or the Schmidt lab GitHub org), add a `summer-school` branch with teaching materials, verification scripts, and simplified examples.
-2. **Separate repo** `kss-schmidt/eart-edu` housing only the website + student-facing materials, linking back to the main `er3t` repo for the package itself.
-3. **GitHub Pages site** hosted on a dedicated repo (e.g., `eart3d.github.io` or `kss-schmidt.github.io/eart-edu`).
+### Sessions 1–2 (2026-06-25)
+- Analysed EaR³T papers, extracted application summary
+- Created ROADMAP, project folder, website skeleton
+- Decided on single-repo strategy (er3t inside er3t-edu)
 
-**Recommendation**: Option 2 + 3 combined. Keep the EaR³T package repo clean (and defer to Hong Chen's upstream); create a separate teaching repo that provides the website, student notebooks, verification scripts, and project starter code. This avoids merge complexity with the research codebase.
+### Sessions 3–5
+- Walked through full installation from scratch
+- Fixed `abs_rep` issue in er3t package
+- Verified 00_er3t_mca.py runs end-to-end
+- Created er3t core data tarball, uploaded to Google Drive (ID: `15YymaUt1i3ad45OZI4kXFDZZlxCNVuGU`)
+- Uploaded les.nc to Google Drive (ID: `1cmrZDaCwoQNhaoPGhJ9OhSVEpDU9h-gg`)
+- MCARaTS/hparx/mcarats-examples tarballs hosted in er3t-edu/source/
 
-**Actions needed:**
-- [ ] Decide on GitHub org / username for hosting
-- [ ] Create `eart-edu` repo (or equivalent name)
-- [ ] Enable GitHub Pages on that repo
-- [ ] Set up `er3t-env.yml` verified against current EaR³T version
-- [ ] Walk through full installation chain to verify and document any bugs
-
----
-
-## Multi-Day Work Plan (1-hour increments)
-
-### Session 1 — 2026-06-25 (today, ~1h15m)
-- [x] Analyze EaR³T papers and extract application summary ✅
-- [x] Create `ert.edu` project folder and this ROADMAP ✅
-- [ ] Set up website skeleton (HTML/CSS, three sections, navigation)
-- [ ] Draft Section 1 science intro text (hook + 1D/3D motivation)
-
-### Session 2 — next available slot
-- [ ] Walk through EaR³T installation from scratch (fresh conda env)
-- [ ] Document any issues / version conflicts encountered
-- [ ] Test MCARaTS compile (on local machine or Alpine)
-- [ ] Draft Section 2 installation guide (based on tested steps)
-
-### Session 3
-- [ ] Walk through libRadtran installation and verify er3t linkage
-- [ ] Run `examples/00_er3t_mca.py` and `00_er3t_lrt.py` end-to-end
-- [ ] Write verification script (`check_installation.py`)
-- [ ] Populate Section 2 with tested instructions
-
-### Session 4
-- [ ] Run `examples/03_spns_flux-sim.py` (CAMP²Ex irradiance closure)
-- [ ] Adapt into Project B student notebook (simplified, guided)
-- [ ] Identify data dependencies; check what is auto-downloaded vs. needs pre-staging
-
-### Session 5
-- [ ] Run `examples/01_oco2_rad-sim.py` or `02_modis_rad-sim.py`
-- [ ] Draft Project C (radiance closure / WorldView) notebook skeleton
-- [ ] Identify Arctic / Pituffik data availability for Project A
-
-### Session 6
-- [ ] Draft Project A (Arctic surface irradiance) notebook
-- [ ] Draft Project D (sub-pixel inhomogeneity) outline
-- [ ] Begin Section 3 project page on website
-
-### Session 7
-- [ ] Polish website: science intro, figures, paper links
-- [ ] Upload / link summer school slides (PDF)
-- [ ] Final review of installation instructions
-- [ ] Test student journey end-to-end (install → verify → run one project)
-
-### Session 8
-- [ ] Buffer: fix bugs found in Session 7
-- [ ] Set up GitHub repo and GitHub Pages deployment
-- [ ] Share website URL with summer school organizers
+### Sessions 6–10 (2026-06-26 to 2026-07-01)
+- Wrote examples 01–05 from scratch (student control blocks, km axes, km coordinates)
+- Example 03: 3 output figures (map/profile/xsection), (x0,y0) output location with star marker
+- Example 04: spectral loop, 2×4 layout (IPA row / 3D row), ±1σ fill_between, x cross-section column
+- Example 05: both solvers in one run, 3 output figures, plot_only mode, Coakley two-stream r(τ) with scipy fit
+- Example 05_plot: standalone plotting script with no er3t dependency
+- Updated install.html for examples 01–05, removed example 06, "five examples" throughout
+- Pushed website update to konradsebastian/er3t-edu
 
 ---
 
-## Open Questions / Decisions Needed
+## Pending Actions (in priority order)
 
-- Which GitHub account/org hosts the teaching repo?
-- Which data sources are available for the Arctic (Pituffik) project? (ARCSIX observations?)
-- Is SHDOM needed for any of the student projects, or is MCARaTS sufficient?
-- What is the summer school date / how much lead time for pre-installation office hours?
-- Should student projects be Jupyter notebooks or standalone Python scripts? (Notebooks preferred for teaching.)
-- What compute resources do students have? (Laptops + Alpine? Just laptops?)
+### 1. Embed er3t into er3t-edu repo [BLOCKING everything else]
+```bash
+# From your terminal:
+cp -r ~/projects/er3t-edu/test-install/er3t ~/projects/er3t-edu/er3t
+cd ~/projects/er3t-edu
+echo "er3t/tmp-data/" >> .gitignore
+echo "er3t/**/__pycache__/" >> .gitignore
+echo "er3t/**/*.pyc" >> .gitignore
+git add er3t/
+git add .gitignore
+git commit -m "Add er3t teaching fork as er3t/ subdirectory"
+git push origin main
+```
+
+### 2. Update install.html clone URL
+Change `git clone https://github.com/hong-chen/er3t.git` →
+```bash
+git clone https://github.com/konradsebastian/er3t-edu.git
+cd er3t-edu/er3t && pip install -e .
+```
+(I will prepare this edit once step 1 is done.)
+
+### 3. Wire core data download into install-examples.sh
+Already done in the script — needs push after step 1.
+
+### 4. Test full student install journey
+Clone fresh copy of er3t-edu, follow install.html exactly, run example 01.
 
 ---
 
-*Last updated: 2026-06-25*
+## Open Questions
+
+- Summer school date / how much lead time for pre-installation office hours?
+- Should student projects be Jupyter notebooks or Python scripts?
+- What compute resources do students have (laptops only, or Alpine cluster)?
+- libRadtran installation — needed for which examples? (flagged as tomorrow's task in earlier session)
+
+---
+
+## Session-End Checklist (to prevent memory loss)
+
+At the end of every working session:
+1. Update this ROADMAP with what was completed and any decisions made
+2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
+3. Note any pending verbal decisions that haven't been executed yet
+
+*Last updated: 2026-07-01*

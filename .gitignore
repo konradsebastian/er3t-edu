@@ -7,3 +7,8 @@ __pycache__/
 *.nc
 tmp-data/
 test-install/
+er3t/tmp-data/
+er3t/**/__pycache__/
+er3t/**/*.pyc
+er3t/**/*.pk
+EOF
