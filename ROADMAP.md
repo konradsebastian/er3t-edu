@@ -26,6 +26,14 @@ Core pedagogical arc: *Why does 3D matter? → How do we model it? → Do it you
 
 The original `hong-chen/er3t` remains the upstream research codebase. Our `er3t/` subdirectory is explicitly a **teaching fork** — simplified examples, student-facing control blocks, pedagogical annotations. It is NOT intended to be merged back upstream.
 
+**Hong Chen confirmed (2026-07-01)** that he is aware of and OK with the teaching fork.
+
+**Upstream branch note**: The `master` branch of `hong-chen/er3t` is outdated. The current
+development branch is `release/v0.2.0-alpha.1` — this is what the Libera L2 algorithm uses and
+represents Hong's latest work. Our teaching fork was derived from the Libera version (equivalent
+to `release/v0.2.0-alpha.1`), so we already have REPTRAN support and all current fixes.
+If re-forking in the future, fork directly from `release/v0.2.0-alpha.1`.
+
 Students install with:
 ```bash
 git clone https://github.com/konradsebastian/er3t-edu.git
@@ -142,15 +150,27 @@ Current state:
   - Checks: Python, imports, atm_atmmod, abs_16g (skip/expected), abs_rep/REPTRAN, pha_mie_wc, MCARaTS exe
   - `--worldview` flag tests Worldview RGB download (no credentials needed for RGB tiles)
 - Security fix: removed two hard-coded credentials from upstream er3t code (Hong Chen's):
-  - `daac.py`: Earthdata JWT token for user hoch4240 (expired Feb 2025) → now raises warning
+  - `daac.py`: Earthdata JWT token for user hoch4240 → now raises warning + reads EARTHDATA_TOKEN
   - `util.py`: SMTP password for mail.hongchen.cz → now reads from env vars
-  - Hong Chen notified; he should rotate SMTP password
+  - Hong Chen notified; **he confirmed (2026-07-01) no security risk on his end**:
+    - Token: NASA revokes every 3 months, already expired — intentionally included for out-of-box use
+    - SMTP password: created solely for er3t, uploaded knowingly — no rotation needed
 - Clarified example numbering — two distinct things previously confused:
   - Example 06 (`06_generated_cloud_radiance.py`): ALREADY WRITTEN, synthetic cloud generator,
     no real satellite data, no Earthdata needed
   - Future Example 07: Worldview satellite comparison (NOT YET WRITTEN, needs Earthdata)
 - **verify_install.py passed** on real er3t env; conda env confirmed → er3t-edu/er3t/
 - Added Step 5 "Verify your installation" to install.html with expected output and hints
+
+### Session 14 (2026-07-01, evening — email from Hong Chen)
+- Received reply from Hong Chen re: upstream branch, security, and radiance self-consistency code
+- **Upstream branch**: `master` is outdated; correct branch is `release/v0.2.0-alpha.1` (Libera flavor)
+  Our teaching fork was derived from the Libera version, so we already have everything we need
+- **Security concerns resolved**: Hong confirmed no risk from either credential
+  (token: intentional, NASA rotates every 3 months, already expired; SMTP password: created for er3t only)
+- **Radiance self-consistency code found**: `projects/02_modis_rad-sim.py` on `release/v0.2.0-alpha.1`
+  — confirmed as the starting point for future Example 07
+- Updated ROADMAP with all of the above
 
 ---
 
@@ -211,11 +231,15 @@ then compare with what the satellite actually measured. This is the "radiance
 self-consistency" approach described in Chen et al. (2023).
 
 Prerequisites for students: Earthdata account + token (see Pending Action #5).
-Note: `er3t/util/daac.py` already contains `download_worldview_image()` and related
-Earthdata download infrastructure. `er3t/tests/00_test_util.py` has a `test_download_worldview()`
-prototype. These are useful starting points.
 
-Action: coordinate with Schmidt Lab students.
+**Existing code (confirmed by Hong Chen, 2026-07-01)**:
+- Starting point: `projects/02_modis_rad-sim.py` on `hong-chen/er3t` branch `release/v0.2.0-alpha.1`
+  - https://github.com/hong-chen/er3t/blob/release/v0.2.0-alpha.1/projects/02_modis_rad-sim.py
+- `er3t/util/daac.py` contains `download_worldview_image()` and Earthdata download infrastructure
+- `er3t/tests/00_test_util.py` has a `test_download_worldview()` prototype
+- Vikas may have more advanced download/processing code — contact him
+
+Action: coordinate with Schmidt Lab students; review `02_modis_rad-sim.py` as starting point.
 
 ### Example 08: Arctic Aircraft / Satellite Irradiance Comparison (tentative, NOT YET WRITTEN)
 Use NASA research aircraft flights from 2024 Arctic campaign. Automatically find the closest
@@ -250,4 +274,4 @@ At the end of every working session:
 2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
 3. Note any pending verbal decisions that haven't been executed yet
 
-*Last updated: 2026-07-01 (session 13, end)*
+*Last updated: 2026-07-01 (session 14)*
