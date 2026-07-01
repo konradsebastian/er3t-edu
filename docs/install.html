@@ -343,9 +343,9 @@ source ~/.cshrc</code></pre>
 
     <h2>Step 6: Run the MCARaTS Examples</h2>
 
-    <p>The six example scripts walk you from the simplest possible case (clear sky, 1D flux) up to
-    a full 3D radiance simulation from a generated cloud field. Each one is self-contained — you run
-    it, it produces a PNG figure and an HDF5 data file, and you can report back what you see.</p>
+    <p>The five example scripts walk you from the simplest possible case (clear sky, 1D flux) up to
+    a full 3D radiance simulation over an LES cloud field. Each one is self-contained — you run
+    it, it produces PNG figures and HDF5 data files, and you can report back what you see.</p>
 
     <div class="callout" style="border-left-color:#2980b9; background:#eaf3fb;">
       <strong>📐 Core concept: Monte Carlo radiative transfer and statistical noise</strong>
@@ -515,102 +515,109 @@ cd $ERTDIR/er3t/examples</code></pre>
 
     <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
 
-    <h3>Example 03 — 3D cloud + 1D aerosol layer, flux</h3>
+    <h3>Example 03 — 3D cloud + aerosol layer, flux</h3>
 
-    <p>Extends Example 02 with a horizontally uniform (1D) aerosol layer at any altitude.
-    Runs both 3D and IPA solvers and produces a 7-panel figure: six flux maps (same layout as
-    Example 02) plus a domain-mean vertical profile spanning the full 0–20 km atmosphere.</p>
+    <p>Extends Example 02 with a horizontally uniform aerosol layer at any altitude.
+    Runs both 3D and IPA solvers and produces three output figures.</p>
 
     <pre><code>python 03_cloud_aerosol_flux.py</code></pre>
 
     <p><strong>Sample output</strong> (default settings: AOD = 0.4, SSA = 0.9, aerosol at 5–8 km):</p>
     <p><img src="assets/03_cloud_aerosol_flux-sample.png"
-            alt="Example 03 sample output — flux maps and vertical profile"
+            alt="Example 03 sample output — flux maps"
             style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
+
+    <p><strong>Output files:</strong></p>
+    <ul>
+      <li><code>03_cloud_aerosol_flux-map_&lt;wl&gt;nm.png</code> — six flux maps (3D and IPA, all three components)
+          in km coordinates, with a star marking the user-defined output location (x0, y0)</li>
+      <li><code>03_cloud_aerosol_flux-profile_&lt;wl&gt;nm.png</code> — domain-mean and point vertical profiles
+          of all flux components from 0–20 km</li>
+      <li><code>03_cloud_aerosol_flux-xsection_&lt;wl&gt;nm.png</code> — x and y cross-sections of flux at
+          the output location, normalised by the TOA irradiance</li>
+    </ul>
 
     <p><strong>Key parameters to explore:</strong></p>
     <ul>
       <li><code>aod</code> — aerosol optical depth; set to <code>0.0</code> to reproduce Example 02 exactly</li>
       <li><code>ssa</code> — single scattering albedo: <code>0.9</code> = mostly scattering (sea salt),
           <code>0.7</code> = absorbing (black carbon, smoke)</li>
-      <li><code>z_bot</code>, <code>z_top</code> — layer altitude [km]; the default (5–8 km) places the
-          aerosol above the cloud, but try <code>z_bot=0.5</code>, <code>z_top=2.5</code> to collocate
-          the aerosol with the cloud and observe the direct interaction</li>
-      <li><code>z_index</code> — which atmosphere level to show in the map panels (0 = surface,
-          3 = 3 km above-cloud view)</li>
+      <li><code>z_bot</code>, <code>z_top</code> — layer altitude [km]; try placing the aerosol inside the
+          cloud layer to observe the direct interaction</li>
+      <li><code>x0</code>, <code>y0</code> — output location in km; the star on the maps and the point profile
+          let you verify that the cross-sections correspond to the correct pixel</li>
     </ul>
 
-    <p><strong>What to look for:</strong> An absorbing aerosol (low SSA) reduces downwelling
-    at the surface and heats the aerosol layer. A scattering aerosol (SSA ≈ 1) redirects flux
-    but the domain-mean surface downwelling changes less than you might expect.
-    Importantly, the vertical profile always shows <em>more diffuse radiation in 3D than IPA</em>:
-    photons escape laterally from cloud sides and scatter through neighbouring clear columns —
-    a horizontal transport effect that IPA cannot reproduce regardless of aerosol position.</p>
+    <p><strong>What to look for:</strong> An absorbing aerosol (low SSA) reduces surface downwelling and
+    heats the aerosol layer. The vertical profile always shows <em>more diffuse radiation in 3D than IPA</em>
+    regardless of aerosol position — a horizontal photon-transport effect IPA cannot reproduce.</p>
 
     <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
 
-    <h3>Example 04 — 3D cloud + 3D aerosol layer, flux</h3>
+    <h3>Example 04 — Spectral flux: 3D cloud + aerosol</h3>
 
-    <p>Same as Example 03 but the aerosol is now spatially inhomogeneous in 3D (varying in x and y),
-    concentrated near the surface. Uses Mie scattering phase functions for the cloud.</p>
+    <p>Extends Example 03 across multiple wavelengths simultaneously, and adds multiple user-defined
+    output locations. Runs both 3D and IPA solvers at each wavelength and produces a single comparison figure.</p>
 
-    <pre><code>python 04_3d_cloud_aerosol_3d_flux.py</code></pre>
+    <pre><code>python 04_cloud_aerosol_spectral.py</code></pre>
 
-    <p><strong>Key parameters:</strong> <code>aer_ext_layer0</code> / <code>aer_ext_layer1</code>
-    control the extinction in the lowest two model levels. Set both to <code>0</code> to isolate
-    the effect of the Mie phase function vs. Henyey-Greenstein used in Examples 02–03.</p>
+    <p><strong>Output:</strong> A 2×4 figure — rows are IPA (top) and 3D (bottom); columns are the LWP map,
+    upwelling spectra, downwelling spectra, and an x cross-section of all flux components at the first
+    wavelength and first output location.</p>
+
+    <p><strong>Key parameters to explore:</strong></p>
+    <ul>
+      <li><code>wavelengths</code> — list of wavelengths in nm; try spanning from UV to SWIR
+          (e.g. <code>[400, 650, 860, 1640]</code>) to see gas absorption features</li>
+      <li><code>x_out</code>, <code>y_out</code>, <code>z_out</code> — lists of output locations;
+          add a second point inside a thick cloud column and compare its spectrum with a clear-sky point</li>
+      <li><code>aod</code>, <code>ssa</code>, <code>asy</code> — aerosol optical properties;
+          the ±1σ shaded bands show Monte Carlo noise on the spectra</li>
+    </ul>
+
+    <p><strong>What to look for:</strong> Gas absorption bands (water vapour near 1400 nm, oxygen A-band
+    near 760 nm) appear as dips in the downwelling spectrum. The 3D–IPA difference is spectrally flat
+    for a purely scattering aerosol but develops spectral structure when absorption is included.</p>
 
     <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
 
     <h3>Example 05 — 3D cloud radiance (satellite view)</h3>
 
     <p>Switches from flux to <em>radiance</em>: simulates what a satellite at 705 km altitude
-    would observe looking straight down through the LES cloud field.
-    This is the most direct connection to real satellite imagery and to cloud retrieval biases.</p>
+    would observe looking through the LES cloud field.  Both 3D and IPA solvers run in one call.
+    This is the most direct connection to real satellite imagery and cloud retrieval biases.</p>
 
     <pre><code>python 05_3d_cloud_radiance.py</code></pre>
 
-    <p><strong>Expected output:</strong> A grayscale image of simulated top-of-atmosphere
-    nadir reflectance — looks like a satellite scene. Bright patches = thick cloud, dark =
-    clear sky.</p>
-
-    <p><strong>What to look for when comparing 3D vs IPA:</strong></p>
+    <p><strong>Output files:</strong></p>
     <ul>
-      <li><em>Bright halos</em> next to cloud edges in 3D — photons scatter sideways out of the
-          cloud into the adjacent clear sky, making the clear region appear brighter than it should.</li>
-      <li><em>Darker cloud centres</em> in 3D vs IPA — photons escape out the sides of tall columns
-          instead of being reflected back up.</li>
-      <li>These effects cause 1D (IPA) satellite retrievals to <em>overestimate</em> cloud optical
-          thickness in the cores and <em>underestimate</em> it near the edges — the core motivation
-          for EaR³T.</li>
+      <li><code>05_3d_cloud_radiance-comparison_&lt;wl&gt;nm.png</code> — 4-panel figure:
+          3D reflectance image, IPA reflectance image, difference map (3D − IPA, diverging red–blue),
+          and a pixel-to-pixel hexbin scatter (3D vs IPA)</li>
+      <li><code>05_3d_cloud_radiance-map_&lt;wl&gt;nm.png</code> — liquid water path (LWP) and cloud optical
+          thickness (COT) maps of the LES scene</li>
+      <li><code>05_3d_cloud_radiance-r_tau_&lt;wl&gt;nm.png</code> — IPA reflectance vs COT (hexbin density),
+          with three analytical Coakley two-stream curves and a best-fit curve overlaid</li>
     </ul>
-
-    <p><strong>Tip:</strong> Run with <code>photons=1e7</code> for a noticeably cleaner image.</p>
-
-    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
-
-    <h3>Example 06 — Radiance from a generated cloud field</h3>
-
-    <p>No external data file needed. EaR³T's cloud generator creates a synthetic scene of
-    hemispheroidal (dome-shaped) cumulus clouds whose geometry you control directly.
-    Great for understanding how cloud morphology affects radiance and 3D effects.</p>
-
-    <pre><code>python 06_generated_cloud_radiance.py</code></pre>
-
-    <p><strong>Expected output:</strong> Three-panel figure — 3D view of cloud-top height,
-    2D cloud optical thickness map, and the simulated radiance image.</p>
 
     <p><strong>Key parameters to explore:</strong></p>
     <ul>
-      <li><code>cloud_frac_tgt</code> — fraction of cloudy pixels; try 0.05 (scattered Cu) vs 0.5 (broken Sc)</li>
-      <li><code>w2h_ratio</code> — width-to-height ratio; large values (10+) give flat stratus-like clouds;
-          small values (1–2) give tall, narrow cumulus</li>
-      <li><code>cloud_radii</code> — list of cloud radii in km; controls cloud size distribution</li>
+      <li><code>solar_zenith_angle</code> — try 60° for long shadows and amplified 3D effects</li>
+      <li><code>sensor_zenith_angle</code> — off-nadir viewing (30–45°) makes shadows dramatic</li>
+      <li><code>surface_albedo</code> — 0.03 = ocean, 0.8 = fresh snow; affects the r(τ) baseline</li>
+      <li><code>plot_only = True</code> — skip RT entirely and regenerate all figures instantly from the
+          saved HDF5 files; use this to tweak colour scales or add annotations without re-running MC</li>
     </ul>
 
-    <p>Compare <code>solver='3D'</code> vs <code>solver='IPA'</code>: isolated cumulus clouds
-    show the strongest 3D effects because they have large surface-area-to-volume ratios — lots
-    of sidewall area for photons to escape through.</p>
+    <p><strong>What to look for:</strong> In the difference map, red = 3D brighter (cloud edges, clear-sky
+    halos), blue = 3D darker (optically thick cloud centres). The r(τ) plot shows how well the simple
+    two-stream theory predicts the MC result — and the fitted g and SSA reveal the effective optical
+    properties of the LES cloud field at that wavelength.</p>
+
+    <p>A standalone plotting script is also provided:</p>
+    <pre><code>python 05_3d_cloud_radiance_plot.py</code></pre>
+    <p>This reads only the saved HDF5 and scene files — no er3t import needed — and is a clean
+    starting point for students who want to add their own analysis or plots.</p>
 
     <h2>CU Research Computing (Alpine / SLURM)</h2>
 
