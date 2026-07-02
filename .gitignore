@@ -12,3 +12,5 @@ er3t/**/__pycache__/
 er3t/**/*.pyc
 er3t/**/*.pk
 EOF
+er3t/
+teaching-branch-setup/*.patch

@@ -1,6 +1,6 @@
 # EaR³T Education & Research — Project Roadmap
 *K. Sebastian Schmidt · University of Colorado Boulder / LASP*
-*Started: 2026-06-25 · Last updated: 2026-07-01 (session 13)*
+*Started: 2026-06-25 · Last updated: 2026-07-02 (session 16)*
 
 ---
 
@@ -16,32 +16,45 @@ Core pedagogical arc: *Why does 3D matter? → How do we model it? → Do it you
 
 ---
 
-## Repository Strategy (DECIDED)
+## Repository Strategy (UPDATED 2026-07-02)
 
-**Single repo: `konradsebastian/er3t-edu`** hosts everything:
-- `docs/`        — GitHub Pages website
-- `source/`      — MCARaTS, hparx, mcarats-examples tarballs (mirrored here to avoid external link rot)
-- `er3t/`        — Teaching fork of Hong Chen's er3t package (our modified version)
-- `ROADMAP.md`   — This file
+### Two-repo architecture (transitioning)
 
-The original `hong-chen/er3t` remains the upstream research codebase. Our `er3t/` subdirectory is explicitly a **teaching fork** — simplified examples, student-facing control blocks, pedagogical annotations. It is NOT intended to be merged back upstream.
+| Repo | Purpose | Status |
+|---|---|---|
+| `konradsebastian/er3t-edu` | Website, data, roadmap | ✅ active |
+| `hong-chen/er3t` branch `teaching/summer-school-2026` | All er3t code + teaching examples | ⏳ pending push access |
 
-**Hong Chen confirmed (2026-07-01)** that he is aware of and OK with the teaching fork.
+**Rationale**: Hong Chen (er3t upstream maintainer) prefers a dedicated teaching branch
+on his own repo over a fork under a different GitHub account. This avoids divergence and
+keeps the code lineage clear. We agreed on this after initial communication (2026-07-02).
 
-**Upstream branch note**: The `master` branch of `hong-chen/er3t` is outdated. The current
-development branch is `release/v0.2.0-alpha.1` — this is what the Libera L2 algorithm uses and
-represents Hong's latest work. Our teaching fork was derived from the Libera version (equivalent
-to `release/v0.2.0-alpha.1`), so we already have REPTRAN support and all current fixes.
-If re-forking in the future, fork directly from `release/v0.2.0-alpha.1`.
+**`er3t/` subdirectory in er3t-edu**: Deactivated as of 2026-07-02.
+- Removed from git tracking via `git rm --cached er3t/` (files kept on disk for local testing)
+- Added `er3t/` to `.gitignore`
+- install.html updated with placeholder notice — does NOT point to the deactivated er3t/
 
-Students install with:
+**Teaching branch** (`teaching/summer-school-2026`):
+- Based on `release/v0.2.0-alpha.1` (Hong's current Libera flavor — NOT master, which is outdated)
+- Two commits prepared as patches in `teaching-branch-setup/`:
+  1. Security fix: remove hardcoded credentials (daac.py + util.py)
+  2. Teaching examples: add 01–06, verify_install.py, install-examples.sh
+- Push script ready: `teaching-branch-setup/push_teaching_branch.sh`
+- **Blocked on**: collaborator access from Hong Chen (email sent 2026-07-02)
+
+**Students will install with** (once teaching branch is live):
 ```bash
-git clone https://github.com/konradsebastian/er3t-edu.git
-cd er3t-edu/er3t
+git clone -b teaching/summer-school-2026 https://github.com/hong-chen/er3t.git
+cd er3t
 pip install -e .
 ```
 
-**Status: DONE** — `er3t/` committed to repo as of 2026-07-01 (commit 946ef1e).
+**Upstream branch note**: The `master` branch of `hong-chen/er3t` is outdated. Always use
+`release/v0.2.0-alpha.1` as the base. Our teaching patches were built on this branch.
+
+**Fallback** (if Hong Chen does not grant access in time): create a formal fork at
+`konradsebastian/er3t` and redirect the push script to that remote. The patches apply cleanly
+either way. Long-term, we still want option B (branch on hong-chen/er3t).
 
 ---
 
@@ -105,13 +118,17 @@ Hosted at: https://konradsebastian.github.io/er3t-edu/install.html
 Current state:
 - ✅ Full installation walkthrough (conda env, MCARaTS compile, er3t install)
 - ✅ Examples 01–05 described with expected outputs and what to look for
-- ✅ Example 06 removed
-- ✅ Clone URL updated to `konradsebastian/er3t-edu`
-- ✅ pip install path updated to `cd er3t-edu/er3t`
-- ✅ Directory structure diagram updated to show `er3t-edu/er3t/`
-- ✅ All `$ERTDIR/er3t/` paths updated to `$ERTDIR/er3t-edu/er3t/`
+- ✅ Example 06 not in summer school curriculum (available for self-study)
+- ✅ Clone URL updated to `hong-chen/er3t` teaching branch (updated 2026-07-02)
+- ✅ All path references updated: `$ERTDIR/er3t/` throughout (no more `er3t-edu/er3t/`)
 - ✅ Core data download step present (install.sh downloads REPTRAN + core data)
 - ✅ install-examples.sh downloads les.nc only (not redundant with install.sh)
+- ✅ Step 5 verify_install.py section with expected output
+- ⚠️ Placeholder callout box in Step 1: "Repository URL update in progress — pending Hong Chen push access"
+
+**Action required after Hong Chen grants access**:
+Remove placeholder callout box from Step 1. The clone URL and path instructions are already
+correct — only the callout text needs to come out.
 
 ---
 
@@ -172,6 +189,45 @@ Current state:
   — confirmed as the starting point for future Example 07
 - Updated ROADMAP with all of the above
 
+### Sessions 15–16 (2026-07-02 — repo restructuring + teaching branch prep)
+
+**Repo restructuring:**
+- Hong Chen confirmed preference for a **teaching branch on his repo** over a fork under konradsebastian
+- Deactivated `er3t/` subdirectory in er3t-edu:
+  - `git rm --cached -r er3t/` (files kept on disk for local testing)
+  - Added `er3t/` and `teaching-branch-setup/*.patch` to `.gitignore`
+  - Committed and pushed to konradsebastian/er3t-edu
+
+**Teaching branch preparation** (`teaching/summer-school-2026`):
+- Cloned `hong-chen/er3t` at `release/v0.2.0-alpha.1` locally at `/tmp/hong-chen-er3t`
+- Applied two commits on top of the release branch:
+  1. **Security commit** (`a34e082`): surgical fix to remove hardcoded credentials only
+     - `er3t/util/daac.py` line 68: JWT token → `EARTHDATA_TOKEN` env var + warning message
+     - `er3t/util/util.py` lines 159-160: SMTP credentials → `ER3T_SENDER_EMAIL` / `ER3T_SENDER_PASSWORD` env vars
+     - Deliberately did NOT apply other diffs (pysolar removal, etc.) to keep Hong's code clean
+  2. **Teaching examples commit** (`4110f5a`): added full examples suite
+     - `examples/01_clear_sky_flux.py` through `06_generated_cloud_radiance.py`
+     - `examples/verify_install.py`
+     - `examples/install-examples.sh`
+- Generated patch files: `0001-security-*.patch` and `0002-teaching-*.patch`
+- Created `push_teaching_branch.sh` (in `teaching-branch-setup/`):
+  re-clones hong-chen/er3t from scratch, applies both patches, pushes the branch
+- **Push attempt**: Failed with 403 — konradsebastian does not have push access to hong-chen/er3t
+- **Email sent to Hong Chen (2026-07-02)**: requesting collaborator access to hong-chen/er3t
+  (to push `teaching/summer-school-2026` branch)
+
+**install.html updated:**
+- Step 1 clone URL changed from `konradsebastian/er3t-edu` → `hong-chen/er3t -b teaching/summer-school-2026`
+- All path references updated: `$ERTDIR/er3t-edu/er3t` → `$ERTDIR/er3t` throughout
+- Footer GitHub link updated
+- Placeholder callout added to Step 1: "URL update in progress — pending collaborator access"
+
+**Analysis of 02_modis_rad-sim.py (future Example 07):**
+- Full analysis of Hong Chen's 1775-line MODIS radiance simulation script
+- Key finding: `sys.exit()` at line 1448 inside `cal_mca_rad()` causes simulation to always abort — must be removed
+- Teaching adaptation plan finalized (see Future Examples section below)
+- Development flagged for post-summer-school (not needed for Jul 11)
+
 ---
 
 ## Pending Actions (in priority order)
@@ -180,11 +236,36 @@ Current state:
 All checks passed. Conda env confirmed pointing to `er3t-edu/er3t/er3t/__init__.py`.
 abs_16g shows `—` (expected skip). MCARaTS, REPTRAN, Mie phase functions all ✓.
 
-### 2. ⚠️ URGENT: Student journey test [deadline July 5]
-Clone a fresh copy to `test-install2/` and follow install.html start to finish:
+### ✅ ~~2. Add verify_install.py step to install.html~~ — DONE (2026-07-01)
+Added as Step 5 in install.html.
+
+### 3. ⚠️ Wait for Hong Chen response [deadline: ASAP — Jul 5 hard stop]
+Email sent 2026-07-02 requesting collaborator access to hong-chen/er3t.
+Two options depending on reply:
+
+**Option B (preferred): Hong Chen grants collaborator access**
 ```bash
-git clone https://github.com/konradsebastian/er3t-edu.git test-install2
-cd test-install2/er3t
+cd ~/projects/er3t-edu/teaching-branch-setup
+bash push_teaching_branch.sh   # clones, applies patches, pushes
+```
+Then: remove placeholder callout from install.html Step 1, commit + push er3t-edu.
+
+**Option A (fallback if no reply by ~Jul 4)**: Create formal fork
+```bash
+# fork hong-chen/er3t on GitHub under konradsebastian account
+# then edit push_teaching_branch.sh: change git push origin → git push fork
+bash push_teaching_branch.sh
+```
+install.html clone URL would become `konradsebastian/er3t` (update accordingly).
+Long-term intention remains Option B.
+
+### 4. ⚠️ URGENT: Full student journey test [deadline July 5]
+**Prerequisite**: teaching branch must be live (see item 3 above).
+Clone fresh from final code location and follow install.html start to finish:
+```bash
+git clone -b teaching/summer-school-2026 https://github.com/hong-chen/er3t.git test-install2
+# (or konradsebastian/er3t if using fallback fork)
+cd test-install2
 conda env create -f er3t-env.yml
 conda activate er3t
 pip install -e .
@@ -194,24 +275,29 @@ bash install-examples.sh
 python verify_install.py
 python 01_clear_sky_flux.py
 ```
+Note any issues → fix and push before Jul 5.
 
-### ✅ ~~3. Add verify_install.py step to install.html~~ — DONE (2026-07-01)
-Added as Step 5 in install.html (between libRadtran Step 4 and examples Step 6).
-Shows expected output, explains ✓/✗/— symbols, callout for MCARaTS env var fix.
+**Local testing (interim, while waiting for Hong Chen)**:
+Can test examples from local clone at `/tmp/hong-chen-er3t` — examples are already there.
 
-### 4. Obtain abs_16g.h5 [post-summer-school]
+### 5. Remove placeholder callout from install.html [after teaching branch is live]
+After push succeeds (Option B or A), remove the "URL update in progress" callout box
+from Step 1 of docs/install.html. The clone URL and path instructions are already correct.
+
+### 6. Obtain abs_16g.h5 [post-summer-school]
 `abs_16g.h5` is not in the current teaching data package. The abs_16g absorption module
-is non-functional. Not needed for examples 01–06 but may be needed for future examples.
+is non-functional. Not needed for examples 01–06 but needed for Example 07 (MODIS sim).
 Action: ask Hong Chen where this file comes from / how to regenerate it.
 
-### 5. Earthdata credentials — decide when students need them [before Example 07]
-No credentials needed for examples 01–06 or verify_install.py (Worldview RGB is public).
-Future Example 07 (Worldview satellite comparison) will require Earthdata credentials.
-When that example is developed, add a prerequisite step to install.html:
+### 7. Earthdata credentials — document for students [before Example 07]
+No credentials needed for examples 01–06 or verify_install.py.
+Example 07 (MODIS radiance simulation) requires a NASA Earthdata token.
+When Example 07 is developed, add a prerequisite step to install.html:
   - Create Earthdata account at https://urs.earthdata.nasa.gov
-  - Generate a token and add to shell rc: `export EARTHDATA_TOKEN="..."`
+  - Generate token at https://ladsweb.modaps.eosdis.nasa.gov/
+  - Add to shell rc: `export EARTHDATA_TOKEN="<your-token-here>"`
 
-### 6. Public/private repo hygiene [post-summer-school]
+### 8. Public/private repo hygiene [post-summer-school]
 ROADMAP.md and internal files are publicly visible in the repo. Options:
 - Move to a separate private companion repo (cleanest)
 - Move to a non-default branch
@@ -224,22 +310,32 @@ Not a blocker now; students are unlikely to look, content is not sensitive.
 **Numbering note**: Example 06 (`06_generated_cloud_radiance.py`) already exists as a
 synthetic cloud generator. The future satellite examples are numbered 07 and 08.
 
-### Example 07: NASA Worldview — Radiance Self-Consistency (NOT YET WRITTEN)
-Pull L2 satellite products for a user-chosen region/date from NASA Worldview, run er3t to
-predict the radiance a satellite should observe given the retrieved cloud/aerosol state,
-then compare with what the satellite actually measured. This is the "radiance
-self-consistency" approach described in Chen et al. (2023).
+### Example 07: MODIS Radiance Self-Consistency (NOT YET WRITTEN — flagged for post-summer-school)
 
-Prerequisites for students: Earthdata account + token (see Pending Action #5).
+Reproduces Appendix 2 of Chen et al. — a validation that er3t can simulate the radiance
+a satellite actually measured, given the retrieved cloud state. Final output: 2D maps of
+observed vs. simulated MODIS Band 1 reflectance + scatter plot.
 
-**Existing code (confirmed by Hong Chen, 2026-07-01)**:
-- Starting point: `projects/02_modis_rad-sim.py` on `hong-chen/er3t` branch `release/v0.2.0-alpha.1`
-  - https://github.com/hong-chen/er3t/blob/release/v0.2.0-alpha.1/projects/02_modis_rad-sim.py
-- `er3t/util/daac.py` contains `download_worldview_image()` and Earthdata download infrastructure
-- `er3t/tests/00_test_util.py` has a `test_download_worldview()` prototype
-- Vikas may have more advanced download/processing code — contact him
+Prerequisites for students: Earthdata account + NASA LAADS token (see Pending Action #7).
 
-Action: coordinate with Schmidt Lab students; review `02_modis_rad-sim.py` as starting point.
+**Starting point**: `projects/02_modis_rad-sim.py` on `hong-chen/er3t` branch `release/v0.2.0-alpha.1`
+(1775 lines, fully analyzed 2026-07-02)
+https://github.com/hong-chen/er3t/blob/release/v0.2.0-alpha.1/projects/02_modis_rad-sim.py
+
+**Simplifications required to produce `07_modis_radiance.py`**:
+1. Remove `sys.exit()` at line 1448 inside `cal_mca_rad()` — this bug causes simulation to abort
+2. Skip IPA COT retrieval pipeline (~300 lines) — use MODIS L2 COT directly instead
+3. Skip parallax correction pipeline (~80 lines) — acceptable for teaching purposes
+4. Swap `abs_rep` → `abs_16g` for gas absorption (requires `abs_16g.h5` — see Pending Action #6)
+5. Reduce photon count: 1e8 → 5e5–1e6 (runtime from hours to minutes)
+6. Pre-supply `pre-data.h5` (intermediate processed data) to skip downloads for students
+   — students may optionally generate it themselves with `EARTHDATA_TOKEN` set
+7. Reference Appendix 2 figure from Chen et al. on website so students can cross-check output
+
+**Website documentation**: Add example 07 to install.html examples section once script is ready.
+Point to the Appendix 2 figure in the paper for cross-check.
+
+**Coordination**: Vikas may have more advanced download/processing code — contact him.
 
 ### Example 08: Arctic Aircraft / Satellite Irradiance Comparison (tentative, NOT YET WRITTEN)
 Use NASA research aircraft flights from 2024 Arctic campaign. Automatically find the closest
@@ -274,4 +370,4 @@ At the end of every working session:
 2. Commit ROADMAP.md: `git add ROADMAP.md && git commit -m "Update roadmap" && git push`
 3. Note any pending verbal decisions that haven't been executed yet
 
-*Last updated: 2026-07-01 (session 14)*
+*Last updated: 2026-07-02 (session 16)*
