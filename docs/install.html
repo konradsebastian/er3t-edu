@@ -333,9 +333,9 @@ $MCARATS_V010_EXE        # should print MCARaTS usage/version info, not "command
     <p>Before running the examples, confirm that all components are working correctly.
     A verification script is provided in the examples directory:</p>
 
-    <pre><code>cd $ERTDIR/er3t/examples
+    <pre><code>cd $ERTDIR/er3t
 conda activate er3t
-python verify_install.py</code></pre>
+python tests/verify_install.py</code></pre>
 
     <p>Each line prints a symbol:</p>
     <ul>
@@ -388,7 +388,7 @@ setenv EARTHDATA_TOKEN "&lt;your-token-here&gt;"
 source ~/.cshrc</code></pre>
       </li>
       <li>Verify with the optional flag (requires internet, ~30 s):
-        <pre><code>python verify_install.py --worldview</code></pre>
+        <pre><code>python tests/verify_install.py --worldview</code></pre>
       </li>
     </ol>
 
