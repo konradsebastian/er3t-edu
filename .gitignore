@@ -6,7 +6,8 @@ __pycache__/
 *.hdf
 *.nc
 tmp-data/
-test-install/
+test-install*/
+er3t-dev/
 er3t/tmp-data/
 er3t/**/__pycache__/
 er3t/**/*.pyc
