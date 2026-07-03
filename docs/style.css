@@ -64,18 +64,18 @@ a:hover { text-decoration: underline; }
 }
 
 .hero-logo-img {
-  max-width: 460px;
-  width: 88%;
+  max-width: 340px;
+  width: 70%;
   height: auto;
   display: block;
-  margin: 0 auto 1rem;
+  margin: 0 auto 0.75rem;
 }
 
 .page-header-logo {
-  height: 80px;
+  height: 52px;
   width: auto;
   display: block;
-  margin: 0 auto 0.75rem;
+  margin: 0 auto 0.5rem;
 }
 
 .nav-links {
