@@ -204,20 +204,22 @@ cd $ERTDIR/er3t/examples</code></pre>
 
     <pre><code>python 03_cloud_aerosol_flux.py</code></pre>
 
-    <p><strong>Sample output</strong> (default settings: AOD = 0.4, SSA = 0.9, aerosol at 5–8 km):</p>
-    <p><img src="assets/03_cloud_aerosol_flux-sample.png"
-            alt="Example 03 sample output — flux maps"
+    <p><strong>Output files</strong> (reference output with 10⁸ photons; default is 10⁵ for speed):</p>
+
+    <p><em>Flux maps — six panels (3D and IPA, all three flux components) in km coordinates:</em></p>
+    <p><img src="assets/03_cloud_aerosol_flux-map_650nm.png"
+            alt="Example 03 — flux maps"
             style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
 
-    <p><strong>Output files:</strong></p>
-    <ul>
-      <li><code>03_cloud_aerosol_flux-map_&lt;wl&gt;nm.png</code> — six flux maps (3D and IPA, all three components)
-          in km coordinates, with a star marking the user-defined output location (x0, y0)</li>
-      <li><code>03_cloud_aerosol_flux-profile_&lt;wl&gt;nm.png</code> — domain-mean and point vertical profiles
-          of all flux components from 0–20 km</li>
-      <li><code>03_cloud_aerosol_flux-xsection_&lt;wl&gt;nm.png</code> — x and y cross-sections of flux at
-          the output location, normalised by the TOA irradiance</li>
-    </ul>
+    <p><em>Vertical profiles — domain-mean and single-point profiles from 0–20 km:</em></p>
+    <p><img src="assets/03_cloud_aerosol_flux-profile_650nm.png"
+            alt="Example 03 — vertical profiles"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
+
+    <p><em>Cross-sections — x and y slices of flux at the output location, normalised by TOA irradiance:</em></p>
+    <p><img src="assets/03_cloud_aerosol_flux-xsection_650nm.png"
+            alt="Example 03 — cross-sections"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
 
     <p><strong>Key parameters to explore:</strong></p>
     <ul>
@@ -243,9 +245,12 @@ cd $ERTDIR/er3t/examples</code></pre>
 
     <pre><code>python 04_cloud_aerosol_spectral.py</code></pre>
 
-    <p><strong>Output:</strong> A 2×4 figure — rows are IPA (top) and 3D (bottom); columns are the LWP map,
-    upwelling spectra, downwelling spectra, and an x cross-section of all flux components at the first
-    wavelength and first output location.</p>
+    <p><strong>Output</strong> (reference output with 10⁸ photons; default is 10⁶ for speed) — a 2×4 figure: rows are IPA (top) and 3D (bottom);
+    columns are the LWP map, upwelling spectra, downwelling spectra, and an x cross-section at the first wavelength and output location:</p>
+
+    <p><img src="assets/04_cloud_aerosol_spectral-comparison_450_555_650nm.png"
+            alt="Example 04 — spectral flux comparison"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
 
     <p><strong>Key parameters to explore:</strong></p>
     <ul>
