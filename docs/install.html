@@ -330,51 +330,7 @@ source ~/.cshrc</code></pre>
     <pre><code>echo $MCARATS_V010_EXE   # should print the full path to the mcarats binary
 $MCARATS_V010_EXE        # should print MCARaTS usage/version info, not "command not found"</code></pre>
 
-    <h2>Step 4: Install libRadtran (1D benchmark solver)</h2>
-
-    <div class="callout"><strong>libRadtran is needed for the full workflow.</strong>
-    Two of the three introductory examples require it — including <code>00_er3t_bmk.py</code>,
-    the benchmark that directly compares the 1D and 3D solvers and is the pedagogical centrepiece
-    of the summer school. You can skip this step if you only want to confirm that MCARaTS compiled
-    correctly, but come back to it before running any projects.</div>
-
-    <p>libRadtran is used by EaR³T as a 1D solver for benchmarking and as a computational shortcut for
-    spectrally resolved calculations.</p>
-
-    <pre><code># Download from http://www.libradtran.org
-mkdir -p ~/libradtran/v2.0.6
-tar -xvzf libRadtran-2.0.6.tar.gz -C ~/libradtran/v2.0.6 --strip-components=1
-cd ~/libradtran/v2.0.6
-
-./configure --prefix=${PWD}
-make
-make check</code></pre>
-
-    <p>Add the libRadtran root directory to your shell environment. EaR³T uses the variable
-    <code>LIBRADTRAN_V2_DIR</code> and constructs paths like <code>$LIBRADTRAN_V2_DIR/bin/uvspec</code>
-    and <code>$LIBRADTRAN_V2_DIR/data/</code> automatically — so point it at the root, not a subdirectory:</p>
-    <pre><code># bash / zsh — add to ~/.bashrc or ~/.zshrc, then source it:
-export LIBRADTRAN_V2_DIR="${HOME}/libradtran/v2.0.6"
-source ~/.bashrc
-
-# tcsh / csh:
-setenv LIBRADTRAN_V2_DIR "${HOME}/libradtran/v2.0.6"
-source ~/.cshrc</code></pre>
-
-    <h3>Optional data packages (recommended)</h3>
-    <ul>
-      <li><code>reptran</code> — correlated-k gas absorption (needed for spectrally resolved calculations)</li>
-      <li><code>ic_yang2013</code> — ice crystal optical properties</li>
-      <li><code>optprop</code> — additional optical property tables</li>
-    </ul>
-
-    <div class="callout">
-      ⚠️ <strong>Tip:</strong> The libRadtran <code>make check</code> step requires <code>ndiff</code>
-      and <code>gawk</code>. Install via your system package manager (<code>brew</code> on macOS,
-      <code>apt-get</code> on Ubuntu) if missing.
-    </div>
-
-    <h2>Step 5: Verify your installation</h2>
+    <h2>Step 4: Verify your installation</h2>
 
     <p>Before running the examples, confirm that all components are working correctly.
     A verification script is provided in the examples directory:</p>
@@ -428,10 +384,42 @@ All required checks passed — your er3t installation is ready!</code></pre>
     <p><em>This section will be populated as common issues are identified during the pre-school office hours.</em></p>
 
     <ul>
-      <li><strong>MCARaTS compile error</strong>: Ensure <code>gfortran</code> is installed and the correct lines in <code>Common.mk</code> are uncommented.</li>
-      <li><strong>libRadtran configure fails</strong>: Check that <code>netcdf</code>, <code>hdf5</code>, and <code>gsl</code> are installed (via conda or system package manager).</li>
+      <li><strong>MCARaTS compile error</strong>: Ensure <code>gfortran</code> is installed and all ifort lines in <code>Common.mk</code> are commented out.</li>
       <li><strong>Import errors in Python</strong>: Make sure the <code>er3t</code> conda environment is active (<code>conda activate er3t</code>).</li>
     </ul>
+
+    <h2>Optional: Install libRadtran (research use only)</h2>
+
+    <div class="callout">
+      <strong>Not needed for the summer school.</strong> All five examples (01–05) and all student
+      projects run on MCARaTS only. libRadtran is only needed if you move on to research use —
+      for example, to run the <code>00_er3t_bmk.py</code> 1D benchmark or spectrally resolved
+      calculations with the full correlated-k solver.
+    </div>
+
+    <p>Download libRadtran 2.0.6 from <a href="http://www.libradtran.org" target="_blank">libradtran.org</a>,
+    then build and install:</p>
+
+    <pre><code>mkdir -p ~/libradtran/v2.0.6
+tar -xvzf libRadtran-2.0.6.tar.gz -C ~/libradtran/v2.0.6 --strip-components=1
+cd ~/libradtran/v2.0.6
+./configure --prefix=${PWD}
+make
+make check</code></pre>
+
+    <p>Add to your shell environment:</p>
+    <pre><code># bash / zsh:
+export LIBRADTRAN_V2_DIR="${HOME}/libradtran/v2.0.6"
+source ~/.bashrc
+
+# tcsh / csh:
+setenv LIBRADTRAN_V2_DIR "${HOME}/libradtran/v2.0.6"
+source ~/.cshrc</code></pre>
+
+    <p>The <code>make check</code> step requires <code>ndiff</code> and <code>gawk</code> — install
+    via <code>brew</code> (macOS) or <code>apt-get</code> (Ubuntu) if missing. Recommended optional
+    data packages: <code>reptran</code>, <code>ic_yang2013</code>, <code>optprop</code>
+    (download from libradtran.org).</p>
 
     <h2>Resources</h2>
     <ul>
