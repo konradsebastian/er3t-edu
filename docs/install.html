@@ -238,14 +238,21 @@ bash install-examples.sh</code></pre>
     (Tohoku University). It is the primary 3D solver used by EaR³T. Version 0.10.3 is used here.</p>
 
     <div class="callout">
-      <strong>Download source files</strong> — we host copies here for reliability. The original
-      upstream source is Iwabuchi's
+      <strong>Download source files into <code>$ERTDIR</code></strong> — we host copies here for
+      reliability. The original upstream source is Iwabuchi's
       <a href="https://sites.google.com/site/mcarats/download" target="_blank">MCARaTS Google site (v0.10.3)</a>.
+      Click each link and save the file directly into your <code>$ERTDIR</code> folder
+      (the same folder that contains <code>er3t/</code>).
       <ul style="margin-top:0.5em; margin-bottom:0;">
         <li><a href="https://github.com/konradsebastian/er3t-edu/raw/main/source/hparx-pub-20160906_1749.tar.gz">hparx-pub-20160906_1749.tar.gz</a> — hparx library (MCARaTS dependency)</li>
         <li><a href="https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-0.10.3.tar.gz">mcarats-0.10.3.tar.gz</a> — MCARaTS source code</li>
         <li><a href="https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-examples-0.10.3.tar.gz">mcarats-examples-0.10.3.tar.gz</a> — MCARaTS example inputs (optional but recommended)</li>
       </ul>
+      Or download them directly from the terminal:
+      <pre style="margin-top:0.6em; margin-bottom:0;"><code>cd $ERTDIR
+curl -LO https://github.com/konradsebastian/er3t-edu/raw/main/source/hparx-pub-20160906_1749.tar.gz
+curl -LO https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-0.10.3.tar.gz
+curl -LO https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-examples-0.10.3.tar.gz</code></pre>
     </div>
 
     <h3>3a. Build hparx (required dependency)</h3>
