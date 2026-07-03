@@ -372,9 +372,12 @@ All required checks passed — your er3t installation is ready!</code></pre>
     <ol>
       <li>Register for a free account at
         <a href="https://urs.earthdata.nasa.gov/" target="_blank">urs.earthdata.nasa.gov</a>.</li>
-      <li>Generate a token at
-        <a href="https://ladsweb.modaps.eosdis.nasa.gov/learn/download-files-using-laads-daac-tokens" target="_blank">LAADS DAAC token page</a>
-        (log in, then click <strong>Generate Token</strong>).</li>
+      <li>Log in at
+        <a href="https://urs.earthdata.nasa.gov/" target="_blank">urs.earthdata.nasa.gov</a>,
+        then go to
+        <code>https://urs.earthdata.nasa.gov/users/&lt;your-username&gt;/user_tokens</code>
+        (replace <code>&lt;your-username&gt;</code> with your Earthdata username)
+        and click <strong>Generate Token</strong>.</li>
       <li>Add the token to your shell startup file and reload it:
         <pre><code># bash / zsh — add to ~/.bashrc or ~/.zshrc:
 export EARTHDATA_TOKEN="&lt;your-token-here&gt;"
