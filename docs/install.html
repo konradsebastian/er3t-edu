@@ -76,33 +76,48 @@ gcc --version</code></pre>
 
     <h3>0c. Install missing tools</h3>
 
-    <p><strong>macOS:</strong></p>
-    <pre><code># git + Xcode Command Line Tools (includes Apple clang):
-xcode-select --install
+    <p>Only install what is missing from your check above.</p>
 
-# gfortran + GNU gcc via Homebrew (recommended):
-brew install gcc
-# This installs gfortran as "gfortran-14" (or similar version number).
-# Create an unversioned alias so build systems find it:
-ln -sf $(brew --prefix gcc)/bin/gfortran-* /usr/local/bin/gfortran
+    <h4 style="margin:1.2rem 0 0.4rem; color:var(--blue-mid);">git not found</h4>
 
-# Alternatively, get gfortran through conda (works inside the er3t environment):
-conda install -c conda-forge gfortran</code></pre>
-
+    <p><strong>macOS:</strong> git ships with the Xcode Command Line Tools.</p>
+    <pre><code>xcode-select --install</code></pre>
     <p><strong>Ubuntu / Debian / WSL2:</strong></p>
-    <pre><code>sudo apt-get update
-sudo apt-get install git gfortran gcc build-essential</code></pre>
+    <pre><code>sudo apt-get update && sudo apt-get install git</code></pre>
 
-    <p><strong>conda / Miniconda (if not installed):</strong>
-    Download from <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda</a>
-    and follow the installer. Restart your terminal after installation, then verify with
-    <code>conda --version</code>.</p>
+    <h4 style="margin:1.2rem 0 0.4rem; color:var(--blue-mid);">conda not found</h4>
+
+    <p>Download and run the Miniconda installer for your platform from
+    <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">docs.conda.io/en/latest/miniconda.html</a>.
+    Restart your terminal after installation, then confirm with <code>conda --version</code>.</p>
+
+    <h4 style="margin:1.2rem 0 0.4rem; color:var(--blue-mid);">gfortran not found</h4>
+
+    <p><strong>macOS — via Homebrew (recommended):</strong></p>
+    <pre><code>brew install gcc</code></pre>
+    <p>Homebrew installs gfortran with a version suffix (e.g. <code>gfortran-15</code>).
+    Create an unversioned alias so that <code>make</code> can find it:</p>
+    <pre><code>ln -sf $(brew --prefix gcc)/bin/gfortran-* /usr/local/bin/gfortran</code></pre>
+    <p><strong>macOS — alternative, via conda</strong> (activate the er3t environment first in Step 1):</p>
+    <pre><code>conda install -c conda-forge gfortran</code></pre>
+    <p><strong>Ubuntu / Debian / WSL2:</strong></p>
+    <pre><code>sudo apt-get update && sudo apt-get install gfortran build-essential</code></pre>
+
+    <h4 style="margin:1.2rem 0 0.4rem; color:var(--blue-mid);">gcc not found</h4>
+
+    <p><strong>macOS:</strong> Apple ships <code>clang</code> as <code>gcc</code> via the Xcode
+    Command Line Tools — running <code>xcode-select --install</code> (see git above) is sufficient.
+    If you need GNU gcc specifically:</p>
+    <pre><code>brew install gcc</code></pre>
+    <p><strong>Ubuntu / Debian / WSL2:</strong></p>
+    <pre><code>sudo apt-get update && sudo apt-get install gcc build-essential</code></pre>
 
     <div class="callout">
-      ⚠️ <strong>macOS gfortran note:</strong> Homebrew installs gfortran with a version suffix
-      (e.g. <code>gfortran-14</code>). If MCARaTS or libRadtran <code>make</code> fails with
-      "gfortran: command not found", either create the alias above or set <code>FC=gfortran-14</code>
-      (matching your installed version) in the relevant <code>Common.mk</code> file.
+      ⚠️ <strong>macOS gfortran alias:</strong> if MCARaTS <code>make</code> fails with
+      "gfortran: command not found" even after installing via Homebrew, the versioned binary
+      (e.g. <code>gfortran-15</code>) is present but the unversioned name is not in your PATH.
+      Either create the alias above, or open <code>Common.mk</code> inside the MCARaTS source
+      and set <code>FC=gfortran-15</code> (matching your installed version).
     </div>
 
     <h3>0d. Disk space and connectivity</h3>
@@ -118,7 +133,7 @@ sudo apt-get install git gfortran gcc build-essential</code></pre>
     <code>~/ert3d</code> or <code>~/projects/er3t-install</code>.</p>
 
     <pre><code>ERTDIR/
-  er3t/                     ← EaR³T teaching fork    (Step 1)
+  er3t/                     ← EaR³T teaching branch  (Step 1)
   hparx/                    ← hparx Fortran library  (Step 3a)
   mcarats-0.10.3/           ← MCARaTS solver         (Step 3b)
   mcarats-examples-0.10.3/  ← MCARaTS example inputs (optional)</code></pre>
