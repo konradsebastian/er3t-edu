@@ -276,16 +276,22 @@ cd $ERTDIR/er3t/examples</code></pre>
 
     <pre><code>python 05_3d_cloud_radiance.py</code></pre>
 
-    <p><strong>Output files:</strong></p>
-    <ul>
-      <li><code>05_3d_cloud_radiance-comparison_&lt;wl&gt;nm.png</code> — 4-panel figure:
-          3D reflectance image, IPA reflectance image, difference map (3D − IPA, diverging red–blue),
-          and a pixel-to-pixel hexbin scatter (3D vs IPA)</li>
-      <li><code>05_3d_cloud_radiance-map_&lt;wl&gt;nm.png</code> — liquid water path (LWP) and cloud optical
-          thickness (COT) maps of the LES scene</li>
-      <li><code>05_3d_cloud_radiance-r_tau_&lt;wl&gt;nm.png</code> — IPA reflectance vs COT (hexbin density),
-          with three analytical Coakley two-stream curves and a best-fit curve overlaid</li>
-    </ul>
+    <p><strong>Output files</strong> (reference output with 10⁸ photons; default is 10⁶ for speed):</p>
+
+    <p><em>4-panel comparison — 3D reflectance, IPA reflectance, difference map, and pixel scatter:</em></p>
+    <p><img src="assets/05_3d_cloud_radiance-comparison_650nm.png"
+            alt="Example 05 — radiance comparison"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
+
+    <p><em>Cloud scene — liquid water path (LWP) and cloud optical thickness (COT):</em></p>
+    <p><img src="assets/05_3d_cloud_lwp_cot.png"
+            alt="Example 05 — LWP and COT maps"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
+
+    <p><em>IPA reflectance vs. COT with Coakley two-stream theory curves:</em></p>
+    <p><img src="assets/05_3d_cloud_radiance-r_tau_650nm.png"
+            alt="Example 05 — R(tau) curve"
+            style="max-width:100%; border:1px solid #ccc; border-radius:4px;"></p>
 
     <p><strong>Key parameters to explore:</strong></p>
     <ul>
