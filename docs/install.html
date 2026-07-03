@@ -389,7 +389,32 @@ source ~/.cshrc</code></pre>
       </li>
     </ol>
 
-    <h2>Step 5: Run the Examples</h2>
+    <h2>Step 5: Run the unit tests</h2>
+
+    <p>With the installation verified, run the module-level unit tests to confirm
+    each component works end-to-end. Three tests require only local data (run them now);
+    two tests download satellite data and require your Earthdata token (run them later,
+    after the examples, once your token is set up).</p>
+
+    <pre><code>cd $ERTDIR/er3t
+conda activate er3t</code></pre>
+
+    <h3>5a. Offline tests — run now</h3>
+    <pre><code>python tests/01_test_atm.py    # atmosphere model
+python tests/02_test_abs.py    # REPTRAN gas absorption
+python tests/04_test_pha.py    # Mie phase function</code></pre>
+
+    <p>Each script prints <strong>✓</strong> lines as tests pass and saves diagnostic PNG files to
+    <code>tmp-data/</code>. All three should complete in under a minute.</p>
+
+    <h3>5b. Download tests — run after examples (requires Earthdata token)</h3>
+    <pre><code>python tests/00_test_util.py --download   # Worldview RGB download
+python tests/03_test_cld.py  --download   # MODIS cloud data download</code></pre>
+
+    <p>If you have not yet set up your token, skip these for now — examples 01–05 work
+    without them. Come back here after completing the examples.</p>
+
+    <h2>Step 6: Run the Examples</h2>
 
     <p>Your installation is complete. Head to the <a href="examples.html">Examples page</a> for
     guided walkthroughs of all five scripts — from a clear-sky flux profile to a full 3D cloud
