@@ -3,8 +3,6 @@
 Teaching materials, student projects, and the summer school website for the
 **Education and Research 3D Radiative Transfer Toolbox (EaR³T)**.
 
-Developed by K. Sebastian Schmidt, Laboratory for Atmospheric and Space Physics (LASP) / University of Colorado Boulder.
-
 ---
 
 ## What's Here
