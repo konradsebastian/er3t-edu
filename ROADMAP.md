@@ -22,19 +22,19 @@ Core pedagogical arc: *Why does 3D matter? → How do we model it? → Do it you
 
 | Repo | Purpose | Status |
 |---|---|---|
-| `konradsebastian/er3t-edu` | Website, data, roadmap | ✅ active |
-| `hong-chen/er3t` branch `teaching/summer-school-2026` | All er3t code + teaching examples | ⏳ pending push access |
+| `konradsebastian/dev_er3t_edu` | Website, data, roadmap | ✅ active |
+| `hong-chen/er3t` branch `dev_er3t_edu` | All er3t code + teaching examples | ⏳ pending push |
 
 **Rationale**: Hong Chen (er3t upstream maintainer) prefers a dedicated teaching branch
 on his own repo over a fork under a different GitHub account. This avoids divergence and
 keeps the code lineage clear. We agreed on this after initial communication (2026-07-02).
 
-**`er3t/` subdirectory in er3t-edu**: Deactivated as of 2026-07-02.
+**`er3t/` subdirectory in dev_er3t_edu**: Deactivated as of 2026-07-02.
 - Removed from git tracking via `git rm --cached er3t/` (files kept on disk for local testing)
 - Added `er3t/` to `.gitignore`
 - install.html updated with placeholder notice — does NOT point to the deactivated er3t/
 
-**Teaching branch** (`teaching/summer-school-2026`):
+**Teaching branch** (`dev_er3t_edu`):
 - Based on `release/v0.2.0-alpha.1` (Hong's current Libera flavor — NOT master, which is outdated)
 - Two commits prepared as patches in `teaching-branch-setup/`:
   1. Security fix: remove hardcoded credentials (daac.py + util.py)
@@ -44,7 +44,7 @@ keeps the code lineage clear. We agreed on this after initial communication (202
 
 **Students will install with** (once teaching branch is live):
 ```bash
-git clone -b teaching/summer-school-2026 https://github.com/hong-chen/er3t.git
+git clone -b dev_er3t_edu https://github.com/hong-chen/er3t.git
 cd er3t
 pip install -e .
 ```
@@ -70,7 +70,7 @@ Two datasets hosted on Schmidt Lab Google Drive:
 Download workflow:
 - `er3t/install.sh` — downloads er3t core data + REPTRAN gas absorption database
 - `er3t/examples/install-examples.sh` — downloads les.nc only
-- MCARaTS, hparx, mcarats-examples tarballs are hosted directly in `er3t-edu/source/`
+- MCARaTS, hparx, mcarats-examples tarballs are hosted directly in `dev_er3t_edu/source/`
 
 Note: REPTRAN is from the libRadtran *project* (Gasteiger et al. 2014) but is a standalone
 data file, not the libRadtran RT solver. The libRadtran solver is NOT needed by any example.
@@ -79,7 +79,7 @@ data file, not the libRadtran RT solver. The libRadtran solver is NOT needed by 
 
 ## Example Scripts
 
-All scripts live in `er3t-edu/er3t/examples/`. Summer school (July 11) covers examples 01–05.
+All scripts live in `dev_er3t_edu/er3t/examples/`. Summer school (July 11) covers examples 01–05.
 Example 06 is written and available but not part of the summer school curriculum.
 
 | Script | Status | Data needed | Summer school |
@@ -113,14 +113,14 @@ Key fixes applied to er3t package:
 
 ## Website (docs/install.html)
 
-Hosted at: https://konradsebastian.github.io/er3t-edu/install.html
+Hosted at: https://konradsebastian.github.io/dev_er3t_edu/install.html
 
 Current state:
 - ✅ Full installation walkthrough (conda env, MCARaTS compile, er3t install)
 - ✅ Examples 01–05 described with expected outputs and what to look for
 - ✅ Example 06 not in summer school curriculum (available for self-study)
 - ✅ Clone URL updated to `hong-chen/er3t` teaching branch (updated 2026-07-02)
-- ✅ All path references updated: `$ERTDIR/er3t/` throughout (no more `er3t-edu/er3t/`)
+- ✅ All path references updated: `$ERTDIR/er3t/` throughout (no more `dev_er3t_edu/er3t/`)
 - ✅ Core data download step present (install.sh downloads REPTRAN + core data)
 - ✅ install-examples.sh downloads les.nc only (not redundant with install.sh)
 - ✅ Step 5 verify_install.py section with expected output
@@ -137,7 +137,7 @@ correct — only the callout text needs to come out.
 ### Sessions 1–2 (2026-06-25)
 - Analysed EaR³T papers, extracted application summary
 - Created ROADMAP, project folder, website skeleton
-- Decided on single-repo strategy (er3t inside er3t-edu)
+- Decided on single-repo strategy (er3t inside dev_er3t_edu)
 
 ### Sessions 3–5
 - Walked through full installation from scratch
@@ -145,7 +145,7 @@ correct — only the callout text needs to come out.
 - Verified 00_er3t_mca.py runs end-to-end
 - Created er3t core data tarball, uploaded to Google Drive (ID: `15YymaUt1i3ad45OZI4kXFDZZlxCNVuGU`)
 - Uploaded les.nc to Google Drive (ID: `1cmrZDaCwoQNhaoPGhJ9OhSVEpDU9h-gg`)
-- MCARaTS/hparx/mcarats-examples tarballs hosted in er3t-edu/source/
+- MCARaTS/hparx/mcarats-examples tarballs hosted in dev_er3t_edu/source/
 
 ### Sessions 6–10 (2026-06-26 to 2026-07-01)
 - Wrote examples 01–05 from scratch (student control blocks, km axes, km coordinates)
@@ -154,9 +154,9 @@ correct — only the callout text needs to come out.
 - Example 05: both solvers in one run, 3 output figures, plot_only mode, Coakley two-stream r(τ) with scipy fit
 - Example 05_plot: standalone plotting script with no er3t dependency
 - Updated install.html for examples 01–05, removed example 06, "five examples" throughout
-- Pushed website update to konradsebastian/er3t-edu
-- Embedded er3t teaching fork as er3t/ subdirectory in er3t-edu (commit 946ef1e)
-- Updated install.html: clone URL → konradsebastian/er3t-edu, all paths → er3t-edu/er3t/
+- Pushed website update to konradsebastian/dev_er3t_edu
+- Embedded er3t teaching fork as er3t/ subdirectory in dev_er3t_edu (commit 946ef1e)
+- Updated install.html: clone URL → konradsebastian/dev_er3t_edu, all paths → dev_er3t_edu/er3t/
 - Reverted install-examples.sh to les.nc only (install.sh handles core data + REPTRAN)
 - Reset plot_only = False in 05_3d_cloud_radiance.py
 
@@ -176,7 +176,7 @@ correct — only the callout text needs to come out.
   - Example 06 (`06_generated_cloud_radiance.py`): ALREADY WRITTEN, synthetic cloud generator,
     no real satellite data, no Earthdata needed
   - Future Example 07: Worldview satellite comparison (NOT YET WRITTEN, needs Earthdata)
-- **verify_install.py passed** on real er3t env; conda env confirmed → er3t-edu/er3t/
+- **verify_install.py passed** on real er3t env; conda env confirmed → dev_er3t_edu/er3t/
 - Added Step 5 "Verify your installation" to install.html with expected output and hints
 
 ### Session 14 (2026-07-01, evening — email from Hong Chen)
@@ -193,12 +193,12 @@ correct — only the callout text needs to come out.
 
 **Repo restructuring:**
 - Hong Chen confirmed preference for a **teaching branch on his repo** over a fork under konradsebastian
-- Deactivated `er3t/` subdirectory in er3t-edu:
+- Deactivated `er3t/` subdirectory in dev_er3t_edu:
   - `git rm --cached -r er3t/` (files kept on disk for local testing)
   - Added `er3t/` and `teaching-branch-setup/*.patch` to `.gitignore`
-  - Committed and pushed to konradsebastian/er3t-edu
+  - Committed and pushed to konradsebastian/dev_er3t_edu
 
-**Teaching branch preparation** (`teaching/summer-school-2026`):
+**Teaching branch preparation** (`dev_er3t_edu`):
 - Cloned `hong-chen/er3t` at `release/v0.2.0-alpha.1` locally at `/tmp/hong-chen-er3t`
 - Applied two commits on top of the release branch:
   1. **Security commit** (`a34e082`): surgical fix to remove hardcoded credentials only
@@ -214,11 +214,11 @@ correct — only the callout text needs to come out.
   re-clones hong-chen/er3t from scratch, applies both patches, pushes the branch
 - **Push attempt**: Failed with 403 — konradsebastian does not have push access to hong-chen/er3t
 - **Email sent to Hong Chen (2026-07-02)**: requesting collaborator access to hong-chen/er3t
-  (to push `teaching/summer-school-2026` branch)
+  (to push `dev_er3t_edu` branch)
 
 **install.html updated:**
-- Step 1 clone URL changed from `konradsebastian/er3t-edu` → `hong-chen/er3t -b teaching/summer-school-2026`
-- All path references updated: `$ERTDIR/er3t-edu/er3t` → `$ERTDIR/er3t` throughout
+- Step 1 clone URL changed from `konradsebastian/dev_er3t_edu` → `hong-chen/er3t -b dev_er3t_edu`
+- All path references updated: `$ERTDIR/dev_er3t_edu/er3t` → `$ERTDIR/er3t` throughout
 - Footer GitHub link updated
 - Placeholder callout added to Step 1: "URL update in progress — pending collaborator access"
 
@@ -233,7 +233,7 @@ correct — only the callout text needs to come out.
 ## Pending Actions (in priority order)
 
 ### ✅ ~~1. Run verify_install.py end-to-end~~ — DONE (2026-07-01)
-All checks passed. Conda env confirmed pointing to `er3t-edu/er3t/er3t/__init__.py`.
+All checks passed. Conda env confirmed pointing to `dev_er3t_edu/er3t/er3t/__init__.py`.
 abs_16g shows `—` (expected skip). MCARaTS, REPTRAN, Mie phase functions all ✓.
 
 ### ✅ ~~2. Add verify_install.py step to install.html~~ — DONE (2026-07-01)
@@ -245,10 +245,10 @@ Two options depending on reply:
 
 **Option B (preferred): Hong Chen grants collaborator access**
 ```bash
-cd ~/projects/er3t-edu/teaching-branch-setup
+cd ~/projects/dev_er3t_edu/teaching-branch-setup
 bash push_teaching_branch.sh   # clones, applies patches, pushes
 ```
-Then: remove placeholder callout from install.html Step 1, commit + push er3t-edu.
+Then: remove placeholder callout from install.html Step 1, commit + push dev_er3t_edu.
 
 **Option A (fallback if no reply by ~Jul 4)**: Create formal fork
 ```bash
@@ -263,7 +263,7 @@ Long-term intention remains Option B.
 **Prerequisite**: teaching branch must be live (see item 3 above).
 Clone fresh from final code location and follow install.html start to finish:
 ```bash
-git clone -b teaching/summer-school-2026 https://github.com/hong-chen/er3t.git test-install2
+git clone -b dev_er3t_edu https://github.com/hong-chen/er3t.git test-install2
 # (or konradsebastian/er3t if using fallback fork)
 cd test-install2
 conda env create -f er3t-env.yml
@@ -278,7 +278,8 @@ python 01_clear_sky_flux.py
 Note any issues → fix and push before Jul 5.
 
 **Local testing (interim, while waiting for Hong Chen)**:
-Can test examples from local clone at `/tmp/hong-chen-er3t` — examples are already there.
+✅ Examples 01–05 confirmed passing locally against `release/v0.2.0-alpha.1` (2026-07-02).
+Can test from local clone at `/tmp/hong-chen-er3t`.
 
 ### 5. Remove placeholder callout from install.html [after teaching branch is live]
 After push succeeds (Option B or A), remove the "URL update in progress" callout box
