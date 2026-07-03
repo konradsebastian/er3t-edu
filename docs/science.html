@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Science — EaR³T</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png" type="image/png">
 </head>
 <body>
 
@@ -14,12 +15,14 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="science.html" class="active">Science</a></li>
       <li><a href="install.html">Installation</a></li>
+      <li><a href="examples.html">Examples</a></li>
       <li><a href="projects.html">Projects</a></li>
-      <li><a href="https://github.com/hong-chen/er3t" target="_blank">GitHub ↗</a></li>
+      <li><a href="https://github.com/hong-chen/er3t/tree/dev_er3t_edu" target="_blank">GitHub ↗</a></li>
     </ul>
   </nav>
 
   <header class="page-header">
+    <img src="er3t-logo-light.png" alt="EaR³T" class="page-header-logo">
     <h1>Science Introduction &amp; Context</h1>
     <p>From 1D radiative transfer to a 3D understanding of clouds, photons, and remote sensing</p>
   </header>
@@ -64,12 +67,18 @@
       means the difference between a libRadtran run and an MCARaTS 3D run through EaR³T gives you
       a clean, well-defined measure of the 3D effect.
     </p>
+    <div class="callout">
+      <strong>Student version:</strong> The teaching flavor of EaR³T is intentionally lightweight.
+      It uses MCARaTS as the sole solver and does <em>not</em> require a libRadtran installation.
+      All five examples run with MCARaTS only, using EaR³T's built-in gas absorption parameterization
+      (REPTRAN, included in the data package). LibRadtran is only needed if you move on to research use.
+    </div>
 
     <h2>Stepping Into 3D: EaR³T and MCARaTS</h2>
 
     <p>
       EaR³T wraps a set of 3D radiative transfer solvers, most prominently
-      <a href="https://sites.google.com/view/hironobu-iwabuchi/mcarats" target="_blank">MCARaTS</a>
+      <a href="https://sites.google.com/site/mcarats/" target="_blank">MCARaTS</a>
       (Monte Carlo Atmospheric Radiative Transfer Simulator by H. Iwabuchi). Monte Carlo methods
       trace individual photon paths through a fully 3D atmospheric grid, capturing all horizontal
       transport effects. The cost is computation time — but for modern research and education,
@@ -100,7 +109,7 @@
       EaR³T tests whether they are consistent with 3D-RT (i.e., with nature). Inconsistency = bias.
     </div>
 
-    <h2>Applications</h2>
+    <h2>Applications as documented in the literature</h2>
 
     <h3>1. OCO-2 Radiance Closure</h3>
     <p>
