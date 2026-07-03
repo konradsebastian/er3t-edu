@@ -256,24 +256,23 @@ curl -LO https://github.com/konradsebastian/er3t-edu/raw/main/source/mcarats-exa
     </div>
 
     <h3>3a. Build hparx (required dependency)</h3>
-    <p>Extract and build from inside <code>$ERTDIR</code> — hparx will sit alongside <code>er3t/</code>:</p>
+    <p>Extract into <code>$ERTDIR</code> — hparx will sit alongside <code>er3t/</code>:</p>
     <pre><code>cd $ERTDIR
 tar -xzf hparx-pub-20160906_1749.tar.gz   # creates $ERTDIR/hparx/
 cd hparx</code></pre>
 
-    <p>Open <code>Common.mk</code> (e.g. <code>vim Common.mk</code> or <code>nano Common.mk</code>).
-    The file has two compiler blocks — one for Intel Fortran (<code>ifort</code>) and one for
-    GNU Fortran (<code>gfortran</code>). You must <strong>comment out the entire ifort block</strong>
-    and <strong>uncomment the gfortran block</strong>. The flags <code>-fast</code>,
-    <code>-no-ipo</code>, and <code>-warn</code> are Intel-specific and will cause errors with
-    gfortran if left active. The result should look like this:</p>
+    <p>Open <code>Common.mk</code> (e.g. <code>vi Common.mk</code> or <code>nano Common.mk</code>).
+    The file has compiler blocks for Intel Fortran (<code>ifort</code>) and GNU Fortran
+    (<code>gfortran</code>). Make sure the gfortran lines are active and <strong>all</strong>
+    ifort lines are commented out — including any <code>FCFLAGS</code> lines that are not
+    directly under a <code>#FC = ifort</code> comment. The result should look like this:</p>
     <pre><code>#FC = ifort
 #FCFLAGS = -fast -no-ipo -warn all
 
 FC = gfortran
 FCFLAGS = -O -Wall</code></pre>
 
-    <p>Build and record the path:</p>
+    <p>Then build:</p>
     <pre><code>make
 
 # bash / zsh — add to ~/.bashrc or ~/.zshrc, then source it:
@@ -295,9 +294,9 @@ source ~/.cshrc</code></pre>
 tar -xzf mcarats-0.10.3.tar.gz   # creates ERTDIR/mcarats-0.10.3/
 cd mcarats-0.10.3/src</code></pre>
 
-    <p>Open <code>Common.mk</code> (e.g. <code>vim Common.mk</code>). Make two edits:</p>
+    <p>Open <code>Common.mk</code> (e.g. <code>vi Common.mk</code>). Make two edits:</p>
     <ol>
-      <li>As with hparx, <strong>comment out the entire ifort block</strong> and uncomment the gfortran block.</li>
+      <li>As with hparx, ensure all ifort lines are commented out and the gfortran block is active.</li>
       <li>Find the <code>LIB_DIR</code> line — it defaults to <code>${HOME}/local/hparx</code> —
       and replace it with the <strong>absolute path</strong> to your compiled hparx directory.
       Shell variables like <code>$ERTDIR</code> are <em>not</em> expanded by <code>make</code>,
