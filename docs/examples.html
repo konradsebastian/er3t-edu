@@ -312,28 +312,6 @@ cd $ERTDIR/er3t/examples</code></pre>
     <p>This reads only the saved HDF5 and scene files — no er3t import needed — and is a clean
     starting point for students who want to add their own analysis or plots.</p>
 
-    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
-
-    <h2>CU Research Computing (Alpine / SLURM)</h2>
-
-    <p>For students with access to CU's Alpine cluster, larger runs can be submitted via SLURM.
-    Add the following header to your example script:</p>
-
-    <pre><code>#!/bin/env python
-#SBATCH --partition=amilan
-#SBATCH --nodes=1
-#SBATCH --ntasks=12
-#SBATCH --ntasks-per-node=12
-#SBATCH --time=01:00:00
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=your.email@colorado.edu
-#SBATCH --output=sbatch-output_%x_%j.txt
-#SBATCH --job-name=my_er3t_run</code></pre>
-
-    <p>Then submit with:</p>
-    <pre><code>chmod +x my_script.py
-sbatch my_script.py</code></pre>
-
   </main>
 
   <footer class="footer">
