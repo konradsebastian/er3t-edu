@@ -6,6 +6,27 @@
   <title>EaR³T — Education and Research 3D Radiative Transfer Toolbox</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.png" type="image/png">
+  <style>
+    .app-papers {
+      margin-top: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .app-papers a {
+      font-size: 0.78rem;
+      color: var(--blue-dark);
+      text-decoration: none;
+      border: 1px solid var(--blue-light);
+      border-radius: 4px;
+      padding: 0.2rem 0.55rem;
+      transition: background 0.15s;
+    }
+    .app-papers a:hover {
+      background: var(--blue-light);
+      color: var(--white);
+    }
+  </style>
 </head>
 <body>
 
@@ -104,21 +125,35 @@
           <h3>Radiance Closure</h3>
           <p>Simulate what a satellite <em>should</em> have measured given retrieved cloud fields, then compare with actual observations. Inconsistency reveals 3D retrieval biases.</p>
           <span class="app-tag">OCO-2 · MODIS</span>
+          <div class="app-papers">
+            <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">📄 Chen et al. 2023</a>
+          </div>
         </div>
         <div class="app-card">
           <h3>Irradiance Closure</h3>
           <p>Drive surface and aircraft irradiance simulations with geostationary cloud products and compare against direct airborne measurements across entire field campaigns.</p>
           <span class="app-tag">CAMP²Ex · AHI · SPN-S</span>
+          <div class="app-papers">
+            <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">📄 Chen et al. 2023</a>
+            <a href="https://doi.org/10.1029/2022JD036822" target="_blank">📄 Gristey et al. 2022</a>
+            <a href="https://doi.org/10.1029/2020GL090152" target="_blank">📄 Gristey et al. 2020</a>
+          </div>
         </div>
         <div class="app-card">
           <h3>ML Training Data</h3>
           <p>Generate synthetic 3D-RT radiance fields from LES cloud scenes to train neural networks that learn to correct IPA bias in cloud property retrievals.</p>
           <span class="app-tag">CNN · LES · U-Net</span>
+          <div class="app-papers">
+            <a href="https://doi.org/10.5194/amt-15-5181-2022" target="_blank">📄 Nataraja et al. 2022</a>
+          </div>
         </div>
         <div class="app-card">
           <h3>Trace Gas Correction</h3>
           <p>Quantify and correct 3D cloud proximity effects on OCO-2/3 CO₂ retrievals — the first physics-based 3D correction for a trace-gas satellite instrument.</p>
           <span class="app-tag">OCO-2 · XCO₂</span>
+          <div class="app-papers">
+            <a href="https://egusphere.copernicus.org/preprints/2024/egusphere-2024-1936/" target="_blank">📄 Yu-Wen Chen et al. 2024</a>
+          </div>
         </div>
       </div>
     </div>
