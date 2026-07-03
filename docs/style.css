@@ -58,9 +58,24 @@ a:hover { text-decoration: underline; }
 }
 
 .nav-logo {
-  height: 38px;
+  height: 48px;
   width: auto;
   display: block;
+}
+
+.hero-logo-img {
+  max-width: 460px;
+  width: 88%;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.page-header-logo {
+  height: 80px;
+  width: auto;
+  display: block;
+  margin: 0 auto 0.75rem;
 }
 
 .nav-links {
