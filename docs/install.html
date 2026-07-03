@@ -337,26 +337,22 @@ $MCARATS_V010_EXE        # should print MCARaTS usage/version info, not "command
 conda activate er3t
 python verify_install.py</code></pre>
 
-    <p>The script checks seven things in order: Python version, core package imports,
-    atmosphere module, absorption databases, Mie phase function tables, and the MCARaTS
-    executable. Each line prints a symbol:</p>
+    <p>Each line prints a symbol:</p>
     <ul>
       <li><strong>✓</strong> — component works correctly</li>
       <li><strong>✗</strong> — something failed; a hint is printed below it</li>
-      <li><strong>—</strong> — skipped (expected; not needed for the summer school examples)</li>
     </ul>
 
     <p>A successful install looks like this:</p>
     <pre><code>  ✓  Python 3.12.x
   ✓  numpy / scipy / matplotlib / h5py / netCDF4
-  ✓  er3t  (installed at .../er3t-edu/er3t/er3t/__init__.py)
+  ✓  er3t  (installed at .../er3t/er3t/__init__.py)
   ✓  atm_atmmod — US standard atmosphere, 41 levels
-  —  abs_16g  (abs_16g.h5 not in data package — not needed for examples 01–05)
   ✓  abs_rep  @ 500 nm, target=coarse
   ✓  pha_mie_wc  @ 500 nm  (mean asymmetry g = 0.xxx)
   ✓  MCARaTS executable found: .../mcarats-0.10.3/src/mcarats
 
-Summary: 6 passed  0 failed  1 skipped
+Summary: 6 passed  0 failed  0 skipped
 All required checks passed — your er3t installation is ready!</code></pre>
 
     <div class="callout">
@@ -367,11 +363,33 @@ All required checks passed — your er3t installation is ready!</code></pre>
       try again.
     </div>
 
-    <p>You can also test network connectivity and NASA Worldview access with the optional
-    flag (requires internet, ~30 seconds):</p>
-    <pre><code>python verify_install.py --worldview</code></pre>
+    <h3>Optional: test NASA Worldview access</h3>
 
-    <h2>Step 6: Run the Examples</h2>
+    <p>The projects use real satellite imagery downloaded from NASA Worldview/LAADS DAAC.
+    Access requires a free NASA Earthdata account and a personal token. Set this up now
+    so it is ready when you need it.</p>
+
+    <ol>
+      <li>Register for a free account at
+        <a href="https://urs.earthdata.nasa.gov/" target="_blank">urs.earthdata.nasa.gov</a>.</li>
+      <li>Generate a token at
+        <a href="https://ladsweb.modaps.eosdis.nasa.gov/learn/download-files-using-laads-daac-tokens" target="_blank">LAADS DAAC token page</a>
+        (log in, then click <strong>Generate Token</strong>).</li>
+      <li>Add the token to your shell startup file and reload it:
+        <pre><code># bash / zsh — add to ~/.bashrc or ~/.zshrc:
+export EARTHDATA_TOKEN="&lt;your-token-here&gt;"
+source ~/.bashrc
+
+# tcsh / csh — add to ~/.cshrc or ~/.tcshrc:
+setenv EARTHDATA_TOKEN "&lt;your-token-here&gt;"
+source ~/.cshrc</code></pre>
+      </li>
+      <li>Verify with the optional flag (requires internet, ~30 s):
+        <pre><code>python verify_install.py --worldview</code></pre>
+      </li>
+    </ol>
+
+    <h2>Step 5: Run the Examples</h2>
 
     <p>Your installation is complete. Head to the <a href="examples.html">Examples page</a> for
     guided walkthroughs of all five scripts — from a clear-sky flux profile to a full 3D cloud
