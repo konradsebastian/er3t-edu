@@ -42,16 +42,21 @@
     platform instructions underneath.</p>
 
     <h3>0a. Quick check</h3>
-    <p>Open a terminal and run:</p>
-    <pre><code>for cmd in git conda gfortran gcc; do
-  if command -v $cmd &>/dev/null; then
-    echo "✓  $cmd: $(${cmd} --version 2>&1 | head -1)"
-  else
-    echo "✗  $cmd: NOT FOUND — see install instructions below"
-  fi
-done</code></pre>
+    <p>Open a terminal and run each line — all four should print a version string:</p>
+    <pre><code>git --version
+conda --version
+gfortran --version
+gcc --version</code></pre>
 
-    <p>All four should show ✓ before you continue. If not, use the platform-specific instructions below.</p>
+    <p>If any command prints "not found" or "command not found", follow the platform-specific
+    instructions below before continuing.</p>
+
+    <div class="callout">
+      <strong>Shell note:</strong> macOS ships with tcsh/csh as the default shell on older systems.
+      If your prompt ends with <code>%</code>, you are in tcsh. All commands in this guide work
+      identically in tcsh and bash/zsh — <em>except</em> for environment variable syntax
+      (<code>setenv</code> vs <code>export</code>), which is noted wherever it appears.
+    </div>
 
     <h3>0b. Windows: set up WSL2 first</h3>
     <div class="callout">
