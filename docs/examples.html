@@ -24,7 +24,7 @@
   <header class="page-header">
     <img src="er3t-logo-light.png" alt="EaR³T" class="page-header-logo">
     <h1>Examples</h1>
-    <p>Five guided scripts from clear-sky flux to 3D cloud radiance in satellite view</p>
+    <p>Seven guided scripts from clear-sky flux to 3D radiance validated against real MODIS satellite data</p>
   </header>
 
   <main class="page-content">
@@ -311,6 +311,119 @@ cd $ERTDIR/er3t/examples</code></pre>
     <pre><code>python 05_3d_cloud_radiance_plot.py</code></pre>
     <p>This reads only the saved HDF5 and scene files — no er3t import needed — and is a clean
     starting point for students who want to add their own analysis or plots.</p>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h2>Example 06 — MODIS Data Download &amp; Pre-processing</h2>
+
+    <p>Examples 01–05 use a synthetic LES cloud field. Examples 06–07 switch to
+    <em>real</em> MODIS satellite data for a student-chosen date and region. This script
+    downloads five MODIS products from NASA LAADS DAAC plus a Worldview true-colour RGB
+    tile, grids everything onto a common 250 m domain, and saves the result to
+    <code>modis_scene_input.h5</code> for use in Example 07.</p>
+
+    <pre><code>python 06_modis_data_download.py</code></pre>
+
+    <div class="callout">
+      <strong>Requires an Earthdata token.</strong> Set <code>EARTHDATA_TOKEN</code> in your
+      shell before running — see the "Optional: test NASA Worldview access" section of the
+      <a href="install.html">Installation guide</a>.
+      The RGB tile alone does not need a token, but the L1B, L2, and surface products do.
+    </div>
+
+    <p><strong>Products downloaded</strong> (~390 MB total for the default scene):</p>
+    <ul>
+      <li><code>MYD02QKM</code> / <code>MOD02QKM</code> — 250 m L1B radiance and reflectance</li>
+      <li><code>MYD03</code> / <code>MOD03</code> — geolocation (SZA, SAA, VZA, VAA, surface height)</li>
+      <li><code>MYD06_L2</code> / <code>MOD06_L2</code> — 1 km cloud product (COT, CER, CTH)</li>
+      <li><code>MCD43A1</code> — Ross-Li BRDF kernel parameters</li>
+      <li><code>MCD43A3</code> — white-sky surface albedo</li>
+      <li>Worldview RGB tile — true-colour context image (no token required)</li>
+    </ul>
+
+    <p><strong>Expected output:</strong></p>
+    <ul>
+      <li><code>data/06_modis_data_download/&lt;date&gt;(&lt;extent&gt;)/modis_scene_input.h5</code> —
+          gridded inputs consumed directly by Example 07</li>
+      <li><code>06_modis_data_download-overview_&lt;wl&gt;nm.png</code> — 4-panel overview:
+          true-colour RGB, cloud optical thickness, solar zenith angle, and white-sky surface albedo</li>
+    </ul>
+
+    <p><strong>Key parameters to explore</strong> (student control block at the top of the script):</p>
+    <ul>
+      <li><code>date</code> — MODIS overpass date; pick one where your region is cloudy</li>
+      <li><code>extent</code> — <code>[lon_min, lon_max, lat_min, lat_max]</code> region of interest</li>
+      <li><code>satellite</code> — <code>'aqua'</code> or <code>'terra'</code></li>
+      <li><code>wavelength</code> — 650 or 860 nm (MODIS Band 1 or Band 2)</li>
+    </ul>
+    <p>The same settings can be overridden from the command line without editing the script, e.g.:</p>
+    <pre><code>python 06_modis_data_download.py --date 2019-09-02 --extent -108.6 -107.4 37.4 38.6</code></pre>
+
+    <p><strong>Cloud field treatment:</strong> MODIS L2 cloud properties (COT, CER, CTH) are
+    only available at 1 km resolution. This script bilinearly interpolates them onto the 250 m
+    target grid so cloud edges taper smoothly instead of repeating blocky 1 km steps. The full
+    research-grade pipeline (<code>projects/02_modis_rad-sim.py</code>) goes further and runs
+    an independent-pixel (IPA) retrieval to derive a true 250 m COT field from the reflectance
+    data itself — that extra step is intentionally left out here to keep the example simple.
+    Using the L2 COT directly is a valid and physically transparent starting point.</p>
+
+    <p>Already downloaded the data for a scene and just want to regenerate the figure
+    (e.g. after tweaking a colour scale)? Use:</p>
+    <pre><code>python 06_modis_data_download.py --plot-only</code></pre>
+
+    <hr style="margin:2em 0; border:none; border-top:1px solid #ddd;">
+
+    <h2>Example 07 — MODIS Radiance Self-Consistency Check</h2>
+
+    <p>Loads the <code>modis_scene_input.h5</code> file produced by Example 06 and runs a 3D
+    Monte Carlo radiance simulation with MCARaTS, using the MODIS-retrieved cloud state (COT,
+    CER, CTH from MYD06_L2) and the MCD43 surface BRDF as inputs. The simulated radiance is then
+    compared pixel-by-pixel against what MODIS actually measured.</p>
+
+    <pre><code>python 07_modis_radiance.py</code></pre>
+
+    <div class="callout" style="border-left-color:#2980b9; background:#eaf3fb;">
+      <strong>📐 Scientific story: self-consistency, not just simulation</strong>
+      <p style="margin-top:0.7em; margin-bottom:0;">This exercise reproduces Appendix 2 of
+      <a href="https://doi.org/10.5194/amt-16-1971-2023" target="_blank">Chen et al. (2022/2023)</a>.
+      The MODIS cloud retrieval (COT, CER, CTH) is itself the output of a 1D radiative transfer
+      model applied to the observed reflectance. If that retrieval and the 3D forward model here
+      are physically self-consistent, feeding the retrieved cloud state back into the 3D model
+      should reproduce the radiance MODIS actually measured — points should fall on the 1:1 line.
+      Deviations reveal where the 1D retrieval assumption breaks down: cloud edges, shadows, and
+      strongly heterogeneous cloud fields show the largest offsets between simulation and
+      observation.</p>
+    </div>
+
+    <p><strong>Expected output</strong> — a 4-panel figure:</p>
+    <ul>
+      <li>Top-left — MODIS measured radiance map</li>
+      <li>Top-right — EaR³T simulated 3D radiance map</li>
+      <li>Bottom-left — log-density scatter of measured vs. simulated radiance, with the 1:1 line</li>
+      <li>Bottom-right — Monte Carlo relative noise (σ/mean across <code>Nrun</code> independent runs)</li>
+    </ul>
+    <p>Saved as <code>07_modis_radiance-comparison_&lt;wl&gt;nm.png</code>, alongside
+    <code>data/07_modis_radiance/&lt;scene&gt;/post-data.h5</code> with the underlying comparison arrays.</p>
+
+    <p><strong>Key parameters to explore</strong> (student control block at the top of the script):</p>
+    <ul>
+      <li><code>fname_predata</code> — path to the <code>modis_scene_input.h5</code> from Example 06;
+          override with <code>--predata</code> to point at a different scene</li>
+      <li><code>photons</code>, <code>Nrun</code> — the default (<code>photons=1e4</code>) is fast but
+          noisy; increase <code>photons</code> (and watch the noise panel shrink) for a cleaner
+          comparison — the original paper used 1e8</li>
+      <li><code>ncpu</code> — number of CPU cores MCARaTS uses</li>
+    </ul>
+
+    <p><strong>What to look for:</strong> Most pixels should cluster near the 1:1 line in the
+    scatter plot — evidence that the MODIS operational retrieval and the 3D forward model agree.
+    Pixels that fall well off the line are usually at cloud edges or in shadow, where the plane-
+    parallel assumption behind the MODIS retrieval breaks down but the 3D simulation captures the
+    real horizontal photon transport. Compare the noise panel against the scatter: high-noise
+    pixels (low photon counts, thick cloud) should be treated cautiously when judging agreement.</p>
+
+    <p>Already ran the simulation and just want to regenerate the comparison figure?</p>
+    <pre><code>python 07_modis_radiance.py --plot-only</code></pre>
 
   </main>
 
