@@ -16,3 +16,5 @@ EOF
 er3t/
 teaching-branch-setup/*.patch
 Common.mk
+*.pptx
+~$*
